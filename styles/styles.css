@@ -131,6 +131,13 @@
   --card-background: var(--color-white);
   --card-padding: 1rem;
 
+  /* --- Form / Input Tokens --- */
+  --input-border: 1px solid var(--border-color-strong);
+  --input-border-radius: var(--radius-md);
+  --input-padding: 0.75rem 0.875rem;
+  --input-font-size: var(--body-font-size-s);
+  --input-background: var(--color-white);
+
   /* --- Layout --- */
   --container-max-width: 1400px;
   --content-max-width: 1200px;
@@ -281,6 +288,7 @@ p.button-wrapper {
   margin: 12px 0;
 }
 
+/* base button shape + primary colors (Jet2 blue is default) */
 a.button:any-link,
 button.button {
   box-sizing: border-box;
@@ -290,9 +298,11 @@ button.button {
   gap: 0.375rem;
   max-width: 100%;
   margin: 0;
-  border: 1px solid transparent;
+  border: 1px solid var(--color-blue-base);
   border-radius: var(--button-border-radius);
   padding: var(--button-padding-md);
+  background-color: var(--color-blue-base);
+  color: var(--text-inverse-color);
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-s);
   font-weight: var(--button-font-weight);
@@ -305,25 +315,14 @@ button.button {
   transition: all var(--button-transition);
 }
 
-a.button[aria-disabled="true"],
-button.button:disabled {
-  cursor: not-allowed;
-  pointer-events: none;
-  background-color: var(--disabled-bg);
-  border-color: var(--disabled-border);
-  color: var(--disabled-text);
+/* focus outline for all interactive buttons */
+a.button:focus-visible,
+button.button:focus-visible {
+  outline: 2px solid var(--color-blue-base);
+  outline-offset: 2px;
 }
 
-/* primary button - Jet2 blue (also the default button style) */
-a.button:any-link,
-a.button.primary,
-button.button,
-button.button.primary {
-  border-color: var(--color-blue-base);
-  background-color: var(--color-blue-base);
-  color: var(--text-inverse-color);
-}
-
+/* primary hover (also the default hover) */
 a.button:hover,
 a.button:focus-visible,
 a.button.primary:hover,
@@ -344,17 +343,25 @@ button.button.primary:active {
   background-color: var(--color-blue-active);
 }
 
+/* primary disabled */
 a.button[aria-disabled="true"],
 a.button.primary[aria-disabled="true"],
-a.button[aria-disabled="true"]:hover,
-a.button.primary[aria-disabled="true"]:hover,
-a.button[aria-disabled="true"]:focus-visible,
-a.button.primary[aria-disabled="true"]:focus-visible,
 button.button:disabled,
-button.button.primary:disabled,
+button.button.primary:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: var(--disabled-bg);
+  border-color: var(--disabled-border);
+  color: var(--disabled-text);
+}
+
+a.button[aria-disabled="true"]:hover,
+a.button[aria-disabled="true"]:focus-visible,
+a.button.primary[aria-disabled="true"]:hover,
+a.button.primary[aria-disabled="true"]:focus-visible,
 button.button:disabled:hover,
-button.button.primary:disabled:hover,
 button.button:disabled:focus-visible,
+button.button.primary:disabled:hover,
 button.button.primary:disabled:focus-visible {
   background-color: var(--disabled-bg);
   border-color: var(--disabled-border);
@@ -429,11 +436,26 @@ button.button.accent:disabled:focus-visible {
   color: var(--disabled-text);
 }
 
-/* focus outline for all interactive elements */
-a.button:focus-visible,
-button.button:focus-visible {
+/* form inputs */
+input,
+textarea,
+select {
+  box-sizing: border-box;
+  border: var(--input-border);
+  border-radius: var(--input-border-radius);
+  padding: var(--input-padding);
+  font-size: var(--input-font-size);
+  background-color: var(--input-background);
+  color: var(--text-color);
+  transition: border-color var(--transition-base);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-blue-base);
   outline: 2px solid var(--color-blue-base);
-  outline-offset: 2px;
+  outline-offset: -1px;
 }
 
 main img {
