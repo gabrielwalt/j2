@@ -104,7 +104,7 @@ const PAGE_TEMPLATE = {
     {
       id: 'section-5-content-highlights',
       name: 'Content Highlights',
-      selector: '.section.background-grey.centered',
+      selector: ['.section.background-grey.centered', '.section.background-grey'],
       style: 'grey',
       blocks: [],
       defaultContent: ['h2', 'p']
@@ -314,6 +314,42 @@ export default {
 
     // 4. Execute afterTransform transformers (final cleanup + section breaks/metadata)
     executeTransformers('afterTransform', main, payload);
+
+    // 4a. Remove YouTube video content that leaked through sections (no video parser in this template).
+    // Pattern: heading + thumbnail image (alt contains "YouTube video") + play text paragraph.
+    main.querySelectorAll('img').forEach((img) => {
+      const alt = (img.getAttribute('alt') || '').toLowerCase();
+      if (alt.includes('youtube video') || alt.includes('thumbnail for youtube')) {
+        const p = img.closest('p');
+        if (p) p.remove();
+        else img.remove();
+      }
+    });
+    main.querySelectorAll('p').forEach((p) => {
+      if (/^play\s+youtube\s+video/i.test(p.textContent.trim())) {
+        p.remove();
+      }
+    });
+    // Remove orphan headings that only preceded video content (now removed).
+    // An orphan heading is one whose next sibling is null or another heading (nothing meaningful follows it).
+    main.querySelectorAll('h2').forEach((h2) => {
+      const next = h2.nextElementSibling;
+      if (!next || next.tagName === 'H2' || next.tagName === 'HR'
+        || next.classList.contains('table-weather') || next.classList.contains('section-metadata')) {
+        // Only remove if this heading is NOT one of our known section headings
+        const text = h2.textContent.trim().toLowerCase();
+        const knownHeadings = ['local weather', 'faqs', 'information', 'things to do', 'sign up for our emails now!'];
+        if (!knownHeadings.includes(text)
+          && !text.startsWith('about ')
+          && !text.startsWith('hotels in ')
+          && !text.startsWith('popular ')
+          && !text.includes('resorts')
+          && !text.includes('blog')
+          && !text.includes('inspiration')) {
+          h2.remove();
+        }
+      }
+    });
 
     // 4b. Post-parse safety net: remove duplicate tab content that leaked through.
     // IDs are empty at this stage (generated later by html2md), so match by text.

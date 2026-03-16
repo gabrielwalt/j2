@@ -35,6 +35,22 @@ export default function transform(hookName, element, payload) {
       '.page-tabs-wrapper',
     ]);
 
+    // Remove video/YouTube embeds (not authorable content for this template)
+    WebImporter.DOMUtils.remove(element, [
+      '.video',
+      '.video-v2',
+    ]);
+
+    // Remove non-authorable dynamic/navigation blocks
+    // regions-teaser: dynamically loaded region cards (empty UL)
+    // things-to-do-teaser: category filter cards with tab-switching links
+    // region-teaser-list: region navigation list
+    WebImporter.DOMUtils.remove(element, [
+      '.regions-teaser',
+      '.things-to-do-teaser',
+      '.region-teaser-list',
+    ]);
+
     // Remove tab navigation links (Overview/Resorts/Places to stay/Things to do)
     element.querySelectorAll('a[href*="tabs|main:"], a[href*="tabs%7Cmain:"]').forEach((a) => {
       const li = a.closest('li');
