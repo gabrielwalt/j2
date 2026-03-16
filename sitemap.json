@@ -1,0 +1,23 @@
+{
+    "$schema": "sitemap",
+    "$version": "1.0.0",
+    "$description": "Tracks all pages in the [SITE_NAME] migration to AEM Edge Delivery Services. Source of truth for page inventory, import status, block usage, validation, and styling approval. Must be kept up-to-date at all times.",
+    "fragments": [
+      {
+        "path": "/nav",
+        "imported": false,
+        "importValidated": false,
+        "critiqued": false,
+        "approved": false
+      },
+      {
+        "path": "/footer",
+        "imported": false,
+        "importValidated": false,
+        "critiqued": false,
+        "approved": false
+      }
+    ],
+    "pages": []
+  }
+  
