@@ -1,0 +1,172 @@
+{
+  "templates": [
+    {
+      "name": "destination-region",
+      "urls": [
+        "https://www.jet2holidays.com/destinations/portugal/algarve"
+      ],
+      "description": "Destination region page showing a specific area within a country (e.g., Algarve within Portugal), with hero imagery, destination details, and holiday offerings",
+      "blocks": [
+        {
+          "name": "columns-destination",
+          "instances": [
+            ".destination-description",
+            ".icon-grid-v2",
+            ".email-sign-up-v2"
+          ]
+        },
+        {
+          "name": "destination-map",
+          "instances": [
+            ".title-links"
+          ]
+        },
+        {
+          "name": "cards-destination",
+          "instances": [
+            ".accommodation-teaser",
+            ".resorts-teaser",
+            ".blog-teaser",
+            ".poi-teaser"
+          ]
+        },
+        {
+          "name": "table-weather",
+          "instances": [
+            ".climate-bar-chart"
+          ]
+        },
+        {
+          "name": "accordion-faq",
+          "instances": [
+            ".accordion"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1-destination-description",
+          "name": "Destination Description",
+          "selector": ".section.destination-description-container",
+          "style": null,
+          "blocks": [
+            "columns-destination"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2-popular-resorts-links",
+          "name": "Popular Resorts Links",
+          "selector": [
+            ".section.mobile-full-width.title-links-container",
+            ".section.title-links-container.map-container"
+          ],
+          "style": null,
+          "blocks": [
+            "destination-map"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-3-hotels",
+          "name": "Hotels in Algarve",
+          "selector": ".section.accommodation-teaser-container",
+          "style": null,
+          "blocks": [
+            "cards-destination"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-4-information",
+          "name": "Destination Information",
+          "selector": ".section.icon-grid-v2-container",
+          "style": null,
+          "blocks": [
+            "columns-destination"
+          ],
+          "defaultContent": [
+            "h2"
+          ]
+        },
+        {
+          "id": "section-5-content-highlights",
+          "name": "Content Highlights",
+          "selector": ".section.background-grey.centered",
+          "style": "grey",
+          "blocks": [],
+          "defaultContent": [
+            "h2",
+            "p"
+          ]
+        },
+        {
+          "id": "section-6-resorts",
+          "name": "Algarve Resorts",
+          "selector": ".section.resorts-teaser-container",
+          "style": null,
+          "blocks": [
+            "cards-destination"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-7-blog",
+          "name": "Blog Teaser",
+          "selector": ".section.blog-teaser-container",
+          "style": null,
+          "blocks": [
+            "cards-destination"
+          ],
+          "defaultContent": [
+            "h2",
+            "p",
+            "a"
+          ]
+        },
+        {
+          "id": "section-8-things-to-do",
+          "name": "Things to Do",
+          "selector": ".section.poi-teaser-container",
+          "style": null,
+          "blocks": [
+            "cards-destination"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-9-weather",
+          "name": "Local Weather",
+          "selector": ".section.climate-bar-chart-container",
+          "style": null,
+          "blocks": [
+            "table-weather"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-10-faqs",
+          "name": "FAQs",
+          "selector": ".section.accordion-container",
+          "style": null,
+          "blocks": [
+            "accordion-faq"
+          ],
+          "defaultContent": [
+            "h2"
+          ]
+        },
+        {
+          "id": "section-11-email-signup",
+          "name": "Email Sign Up",
+          "selector": ".section.email-sign-up-v2-container",
+          "style": null,
+          "blocks": [
+            "columns-destination"
+          ],
+          "defaultContent": []
+        }
+      ]
+    }
+  ]
+}

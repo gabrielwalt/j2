@@ -1,0 +1,38 @@
+{
+  "variantName": "columns-destination",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-03-16T10:35:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.jet2holidays.com/destinations/portugal/algarve",
+    "originPage": "destination region page",
+    "blockPosition": "multiple"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "destination-info",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "heading + text + image",
+    "buttonCount": 0,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "destination pages with text and image side by side",
+      "informational content with visual reference",
+      "resort and region overview sections"
+    ],
+    "notSuitableFor": [
+      "product comparison layouts",
+      "multi-row data grids"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/destinations/portugal/algarve"],
+    "reuseCount": 1,
+    "lastUsed": "2026-03-16T10:35:00.000Z"
+  }
+}

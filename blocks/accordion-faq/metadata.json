@@ -1,0 +1,38 @@
+{
+  "variantName": "accordion-faq",
+  "baseBlock": "accordion",
+  "version": "1.0.0",
+  "created": "2026-03-16T10:35:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.jet2holidays.com/destinations/portugal/algarve",
+    "originPage": "destination region page",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "faq",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "question + answer pairs",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "FAQ sections on destination pages",
+      "frequently asked questions anywhere",
+      "collapsible content sections"
+    ],
+    "notSuitableFor": [
+      "complex nested accordions",
+      "accordions with media content"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/destinations/portugal/algarve"],
+    "reuseCount": 1,
+    "lastUsed": "2026-03-16T10:35:00.000Z"
+  }
+}

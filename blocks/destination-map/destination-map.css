@@ -1,0 +1,33 @@
+.destination-map > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.destination-map img {
+  width: 100%;
+}
+
+.destination-map > div > div {
+  order: 1;
+}
+
+.destination-map > div > .destination-map-img-col {
+  order: 0;
+}
+
+.destination-map > div > .destination-map-img-col img {
+  display: block;
+}
+
+@media (width >= 900px) {
+  .destination-map > div {
+    align-items: center;
+    flex-direction: unset;
+    gap: 24px;
+  }
+
+  .destination-map > div > div {
+    flex: 1;
+    order: unset;
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "variantName": "table-weather",
+  "baseBlock": "table",
+  "version": "1.0.0",
+  "created": "2026-03-16T10:35:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.jet2holidays.com/destinations/portugal/algarve",
+    "originPage": "destination region page",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "weather-data",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "months header row + temperature data row",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "weather/climate data tables",
+      "monthly comparison data",
+      "destination information tables"
+    ],
+    "notSuitableFor": [
+      "complex multi-row data tables",
+      "interactive data grids"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/destinations/portugal/algarve"],
+    "reuseCount": 1,
+    "lastUsed": "2026-03-16T10:35:00.000Z"
+  }
+}
