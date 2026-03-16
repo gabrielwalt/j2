@@ -24,8 +24,15 @@ function addReadMore(textCol) {
     btn.textContent = expanded ? 'Read more' : 'Read less';
   });
 
-  // After fonts load and layout settles, remove clamp + button if not needed
-  document.fonts.ready.then(() => {
+  // Remove clamp + button if content is short enough.
+  // Must wait for both block CSS and fonts before measuring.
+  function removeClampIfNotNeeded(retries) {
+    const clampValue = window.getComputedStyle(wrapper).webkitLineClamp;
+    if (clampValue === 'none' && retries > 0) {
+      // Block CSS not loaded yet — -webkit-line-clamp has no effect
+      requestAnimationFrame(() => removeClampIfNotNeeded(retries - 1));
+      return;
+    }
     wrapper.classList.remove('is-clamped');
     const naturalHeight = wrapper.scrollHeight;
     wrapper.classList.add('is-clamped');
@@ -34,6 +41,9 @@ function addReadMore(textCol) {
       wrapper.classList.remove('is-clamped');
       btn.remove();
     }
+  }
+  document.fonts.ready.then(() => {
+    requestAnimationFrame(() => removeClampIfNotNeeded(20));
   });
 }
 
