@@ -1,4 +1,5 @@
 {
   "type": "da",
-  "contentHostUrl": "https://content.da.live/gabrielwalt/j2/"
+  "libraryUrl": "https://main--sta-boilerplate--aemdemos.aem.page/tools/sidekick/library.json",
+  "contentHostUrl": "content.da.live"
 }
