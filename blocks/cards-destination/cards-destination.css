@@ -32,20 +32,38 @@
 }
 
 .cards-destination .cards-destination-card-body h3 {
-  margin-top: 0;
-  margin-bottom: 0.25em;
-  font-size: var(--body-font-size-s);
-  font-weight: 400;
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .cards-destination .cards-destination-card-body h3 a {
   color: var(--text-color);
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .cards-destination .cards-destination-card-body h3 a:hover {
   color: var(--link-color);
-  text-decoration: underline;
+}
+
+.cards-destination .cards-destination-card-body .cards-destination-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--body-font-size-s);
+  font-weight: 600;
+  color: var(--text-secondary-color);
+  margin: 0 0 4px;
+}
+
+.cards-destination .cards-destination-card-body .cards-destination-location svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 2;
 }
 
 .cards-destination .cards-destination-card-body p {

@@ -90,3 +90,25 @@
   color: var(--text-secondary-color);
   grid-column: 2;
 }
+
+/* Read more / Read less */
+.columns-destination-text.is-clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 8;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.columns-destination-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary-color);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 0;
+  cursor: pointer;
+}
+
+.columns-destination-toggle:hover {
+  text-decoration: underline;
+}
