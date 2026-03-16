@@ -33,7 +33,7 @@
 
 @media (width >= 992px) {
   .columns-destination > div {
-    align-items: center;
+    align-items: flex-start;
     flex-direction: unset;
     gap: 32px;
   }
