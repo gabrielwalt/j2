@@ -1,3 +1,18 @@
+/**
+ * Wait for the block's own CSS <link> to finish loading.
+ * In EDS, loadBlock() loads CSS and JS in parallel, so decorate()
+ * can run before the stylesheet is applied.
+ */
+function waitForBlockCSS() {
+  const link = document.querySelector('link[href*="columns-destination"]');
+  if (!link) return Promise.resolve();
+  if (link.sheet) return Promise.resolve();
+  return new Promise((resolve) => {
+    link.addEventListener('load', resolve);
+    link.addEventListener('error', resolve);
+  });
+}
+
 function addReadMore(textCol) {
   const paragraphs = textCol.querySelectorAll('p');
   if (paragraphs.length < 2) return;
@@ -25,25 +40,18 @@ function addReadMore(textCol) {
   });
 
   // Remove clamp + button if content is short enough.
-  // Must wait for both block CSS and fonts before measuring.
-  function removeClampIfNotNeeded(retries) {
-    const clampValue = window.getComputedStyle(wrapper).webkitLineClamp;
-    if (clampValue === 'none' && retries > 0) {
-      // Block CSS not loaded yet — -webkit-line-clamp has no effect
-      requestAnimationFrame(() => removeClampIfNotNeeded(retries - 1));
-      return;
-    }
-    wrapper.classList.remove('is-clamped');
-    const naturalHeight = wrapper.scrollHeight;
-    wrapper.classList.add('is-clamped');
-    const clampedHeight = wrapper.offsetHeight;
-    if (clampedHeight >= naturalHeight) {
+  // Wait for block CSS (so -webkit-line-clamp is applied) and fonts (so text reflows).
+  Promise.all([waitForBlockCSS(), document.fonts.ready]).then(() => {
+    requestAnimationFrame(() => {
       wrapper.classList.remove('is-clamped');
-      btn.remove();
-    }
-  }
-  document.fonts.ready.then(() => {
-    requestAnimationFrame(() => removeClampIfNotNeeded(20));
+      const naturalHeight = wrapper.scrollHeight;
+      wrapper.classList.add('is-clamped');
+      const clampedHeight = wrapper.offsetHeight;
+      if (clampedHeight >= naturalHeight) {
+        wrapper.classList.remove('is-clamped');
+        btn.remove();
+      }
+    });
   });
 }
 
