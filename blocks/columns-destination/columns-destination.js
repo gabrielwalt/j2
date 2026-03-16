@@ -8,30 +8,33 @@ function addReadMore(textCol) {
   [...paragraphs].forEach((p) => wrapper.append(p));
   textCol.append(wrapper);
 
-  // Apply clamp, then check if content actually overflows
-  wrapper.classList.add('is-clamped');
-
+  // Measure natural height first, then clamp and compare
   requestAnimationFrame(() => {
-    const { scrollHeight, clientHeight } = wrapper;
-    if (scrollHeight <= clientHeight) {
-      wrapper.classList.remove('is-clamped');
-      return;
-    }
+    const naturalHeight = wrapper.scrollHeight;
+    wrapper.classList.add('is-clamped');
 
-    const heading = textCol.querySelector('h2');
-    const label = heading ? heading.textContent : '';
+    requestAnimationFrame(() => {
+      const clampedHeight = wrapper.clientHeight;
+      if (clampedHeight >= naturalHeight) {
+        wrapper.classList.remove('is-clamped');
+        return;
+      }
 
-    const btn = document.createElement('button');
-    btn.className = 'columns-destination-toggle';
-    btn.setAttribute('aria-expanded', 'false');
-    btn.setAttribute('aria-label', `Read more about "${label}"`);
-    btn.textContent = 'Read more';
-    textCol.append(btn);
+      const heading = textCol.querySelector('h2');
+      const label = heading ? heading.textContent : '';
 
-    btn.addEventListener('click', () => {
-      const expanded = wrapper.classList.toggle('is-clamped');
-      btn.setAttribute('aria-expanded', String(!expanded));
-      btn.textContent = expanded ? 'Read more' : 'Read less';
+      const btn = document.createElement('button');
+      btn.className = 'columns-destination-toggle';
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', `Read more about "${label}"`);
+      btn.textContent = 'Read more';
+      textCol.append(btn);
+
+      btn.addEventListener('click', () => {
+        const expanded = wrapper.classList.toggle('is-clamped');
+        btn.setAttribute('aria-expanded', String(!expanded));
+        btn.textContent = expanded ? 'Read more' : 'Read less';
+      });
     });
   });
 }
