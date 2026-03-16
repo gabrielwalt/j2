@@ -41,14 +41,24 @@ export default function transform(hookName, element, payload) {
       '.video-v2',
     ]);
 
-    // Remove non-authorable dynamic/navigation blocks
-    // regions-teaser: dynamically loaded region cards (empty UL)
-    // things-to-do-teaser: category filter cards with tab-switching links
-    // region-teaser-list: region navigation list
+    // Remove non-Overview tab panels entirely (Regions, Places to stay, Things to do)
+    // These are separate tab panel sections at the <main> level that contain
+    // non-authorable content (dynamic search, category filters, region lists)
+    element.querySelectorAll('section[role="tabpanel"]').forEach((panel) => {
+      const id = panel.id || '';
+      if (!id.includes('overview')) {
+        panel.remove();
+      }
+    });
+
+    // Safety net: Remove individual non-authorable dynamic/navigation blocks
+    // in case they appear outside tab panel structure
     WebImporter.DOMUtils.remove(element, [
       '.regions-teaser',
       '.things-to-do-teaser',
+      '.things-to-do',
       '.region-teaser-list',
+      '.accommodation-search',
     ]);
 
     // Remove tab navigation links (Overview/Resorts/Places to stay/Things to do)
