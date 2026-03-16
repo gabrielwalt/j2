@@ -9,7 +9,7 @@ const { readFileSync, writeFileSync, mkdirSync } = require('fs');
 const { dirname, join } = require('path');
 
 const IMPORT_SCRIPT = 'tools/importer/import-destination-region.bundle.js';
-const URLS_FILE = 'tools/importer/urls-destination-region.txt';
+const URLS_FILE = process.env.URLS_FILE || 'tools/importer/urls-destination-region.txt';
 const OUTPUT_DIR = 'content';
 const HELIX_IMPORTER_PATH = `${PLUGIN_ROOT}/static/inject/helix-importer.js`;
 

@@ -92,7 +92,7 @@
         {
           "id": "section-5-content-highlights",
           "name": "Content Highlights",
-          "selector": ".section.background-grey.centered",
+          "selector": [".section.background-grey.centered", ".section.background-grey"],
           "style": "grey",
           "blocks": [],
           "defaultContent": [
