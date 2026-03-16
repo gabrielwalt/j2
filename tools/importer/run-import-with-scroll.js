@@ -63,7 +63,12 @@ async function fullPageScroll(page) {
       userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     });
     const page = await ctx.newPage();
-    page.on('console', m => { if (m.type() === 'log') console.log(`  [Browser] ${m.text()}`); });
+    page.on('console', m => {
+      const type = m.type();
+      if (type === 'log' || type === 'warning' || type === 'error') {
+        console.log(`  [Browser:${type}] ${m.text()}`);
+      }
+    });
 
     try {
       try {

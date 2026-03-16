@@ -194,14 +194,14 @@ function executeTransformers(hookName, element, payload) {
  * @param {Object} template - The embedded PAGE_TEMPLATE object
  * @returns {Array} Array of block instances found on the page
  */
-function findBlocksOnPage(document, template) {
+function findBlocksOnPage(root, template) {
   const pageBlocks = [];
 
   template.blocks.forEach((blockDef) => {
     blockDef.instances.forEach((selector) => {
-      const elements = document.querySelectorAll(selector);
+      const elements = root.querySelectorAll(selector);
       if (elements.length === 0) {
-        console.warn(`Block "${blockDef.name}" selector not found: ${selector}`);
+        console.log(`Block "${blockDef.name}" selector not found: ${selector}`);
       }
       elements.forEach((element) => {
         pageBlocks.push({
@@ -231,8 +231,72 @@ export default {
     // 1. Execute beforeTransform transformers (initial cleanup)
     executeTransformers('beforeTransform', main, payload);
 
-    // 2. Find blocks on page using embedded template
-    const pageBlocks = findBlocksOnPage(document, PAGE_TEMPLATE);
+    // 1b. OVERVIEW TAB ONLY: Truncate content after the email-sign-up section.
+    // The Jet2 page has 4 tabs (Overview, Resorts, Places to stay, Things to do).
+    // Full-page scrolling reveals content from all tabs. We only want the Overview tab
+    // (sections 1-11, ending with email-sign-up). Everything after must be removed.
+    const emailSignupBlock = main.querySelector('.email-sign-up-v2');
+    if (emailSignupBlock) {
+      const sectionContainer = emailSignupBlock.closest('.section') || emailSignupBlock.parentElement;
+      if (sectionContainer && sectionContainer !== main) {
+        // Remove all sibling sections after the email-sign-up section container
+        let next = sectionContainer.nextElementSibling;
+        while (next) {
+          const toRemove = next;
+          next = next.nextElementSibling;
+          toRemove.remove();
+        }
+        // Walk up from emailSignupBlock to find the direct child of sectionContainer
+        // (the block may be nested in wrapper divs within the section)
+        let directChild = emailSignupBlock;
+        while (directChild.parentElement && directChild.parentElement !== sectionContainer) {
+          directChild = directChild.parentElement;
+        }
+        // Remove all children of the section container that come AFTER the one containing the block
+        let nextChild = directChild.nextElementSibling;
+        while (nextChild) {
+          const toRemove = nextChild;
+          nextChild = nextChild.nextElementSibling;
+          toRemove.remove();
+        }
+        // Also clean up within the direct child - remove siblings of the block itself
+        let nextInWrapper = emailSignupBlock.nextElementSibling;
+        while (nextInWrapper) {
+          const toRemove = nextInWrapper;
+          nextInWrapper = nextInWrapper.nextElementSibling;
+          toRemove.remove();
+        }
+      }
+    }
+    // Fallback: remove known tab panel content by heading text
+    main.querySelectorAll('h2').forEach((h2) => {
+      const text = h2.textContent.trim();
+      if (/resorts\s*\(\d+\)/i.test(text)
+        || (/^things to do$/i.test(text) && h2.id && h2.id.endsWith('-1'))
+        || /accommodation\s+options?\s+found/i.test(text)
+        || /explore.*destinations/i.test(text)) {
+        let next = h2.nextElementSibling;
+        while (next) {
+          const toRemove = next;
+          next = next.nextElementSibling;
+          toRemove.remove();
+        }
+        h2.remove();
+      }
+    });
+
+    // Remove skip-link that may survive the transformer cleanup
+    main.querySelectorAll('a.skip-link, a[href="#main-content"]').forEach((el) => {
+      const parent = el.closest('p') || el.parentElement;
+      if (parent && parent !== main && !parent.querySelector('.columns-destination, .cards-destination, .destination-map')) {
+        parent.remove();
+      } else {
+        el.remove();
+      }
+    });
+
+    // 2. Find blocks on page using main element (not document, which may lack a body in the importer pipeline)
+    const pageBlocks = findBlocksOnPage(main, PAGE_TEMPLATE);
 
     // 3. Parse each block using registered parsers
     pageBlocks.forEach((block) => {
@@ -250,6 +314,44 @@ export default {
 
     // 4. Execute afterTransform transformers (final cleanup + section breaks/metadata)
     executeTransformers('afterTransform', main, payload);
+
+    // 4b. Post-parse safety net: remove duplicate tab content that leaked through.
+    // IDs are empty at this stage (generated later by html2md), so match by text.
+    // Track seen heading texts - first occurrence is legitimate, duplicates are tab panel leaks.
+    const seenH2Texts = new Set();
+    const parsedBlockClasses = ['columns-destination', 'cards-destination', 'destination-map', 'table-weather', 'accordion-faq', 'section-metadata', 'metadata'];
+    Array.from(main.querySelectorAll('h2')).forEach((h2) => {
+      const text = h2.textContent.trim().toLowerCase();
+      if (seenH2Texts.has(text)) {
+        // Duplicate heading found - walk up from h2 to the nearest section-level ancestor
+        // to remove the entire tab panel structure, not just the h2 itself
+        let target = h2;
+        while (target.parentElement && target.parentElement !== main) {
+          const parent = target.parentElement;
+          // Stop at section containers or parsed EDS block tables
+          if (parent.classList.contains('section')
+            || parsedBlockClasses.some((c) => parent.classList.contains(c))) break;
+          target = parent;
+        }
+        // Remove target and all following siblings at this level
+        let node = target.nextSibling;
+        while (node) {
+          const toRemove = node;
+          node = node.nextSibling;
+          toRemove.remove();
+        }
+        target.remove();
+      } else {
+        seenH2Texts.add(text);
+      }
+    });
+    // Remove "Show more things to do" and "Back to top" remnants
+    main.querySelectorAll('p, a').forEach((el) => {
+      const text = el.textContent.trim().toLowerCase();
+      if (text === 'show more things to do' || text === 'back to top') {
+        el.remove();
+      }
+    });
 
     // 5. Constrain image sizes - add width attribute to prevent oversized images
     main.querySelectorAll('img').forEach((img) => {
@@ -292,7 +394,15 @@ export default {
       }
     });
 
-    // 7. Apply WebImporter built-in rules
+    // 7. Final text cleanup - remove site navigation remnants that survived all transforms
+    main.querySelectorAll('p').forEach((p) => {
+      const text = p.textContent.trim().toLowerCase();
+      if (text === 'back to top' || text === 'show more things to do') {
+        p.remove();
+      }
+    });
+
+    // 8. Apply WebImporter built-in rules
     const hr = document.createElement('hr');
     main.appendChild(hr);
     WebImporter.rules.createMetadata(main, document);

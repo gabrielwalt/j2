@@ -17,20 +17,20 @@ export default function transform(hookName, element, payload) {
       '[class*="cookie"]',
       '.ribbon-banner',
       '.ribbon-banner-wrapper',
-      '.section.ribbon-banner-container',
     ]);
 
     // Remove "Skip to main content" link
     element.querySelectorAll('a[href="#main-content"]').forEach((a) => {
       const parent = a.closest('p') || a.parentElement;
-      if (parent) parent.remove();
+      if (parent && parent.tagName !== 'BODY') parent.remove();
     });
+    // Also remove the skip-link anchor element itself
+    element.querySelectorAll('a.skip-link, .skip-link').forEach((el) => el.remove());
 
     // Remove page-level tab controls and navigation
     WebImporter.DOMUtils.remove(element, [
       '.tab-controls',
       '.tab-controls-wrapper',
-      '.section.tab-controls-container',
       '.page-tabs',
       '.page-tabs-wrapper',
     ]);
@@ -40,33 +40,70 @@ export default function transform(hookName, element, payload) {
       const li = a.closest('li');
       if (li) li.remove();
     });
-    // Clean up empty ULs left behind after removing tab links
-    element.querySelectorAll('ul').forEach((ul) => {
-      if (ul.children.length === 0 && !ul.closest('.destination-description, .title-links, .icon-grid-v2, .accommodation-teaser, .resorts-teaser, .blog-teaser, .poi-teaser')) {
-        ul.remove();
-      }
-    });
 
     // ---------------------------------------------------------------
-    // OVERVIEW TAB ONLY: Remove everything after the email-sign-up section.
-    // The Jet2 page uses tabs. When scrolling the full page, hidden tab panels
-    // become visible. These contain:
-    //   - "Resorts" tab: "Algarve Resorts (33)" with 33 resort cards
-    //   - "Places to stay" tab: "464 accommodation options found"
-    //   - "Things to do" tab: duplicate POI listings
-    //   - "Explore destinations" footer navigation
-    //   - Tracking pixels
-    // All of this is after section 11 (email signup) and must be removed.
+    // OVERVIEW TAB ONLY: Remove all content after the last known section.
+    // Strategy 1: Find the email-sign-up section container
+    // Strategy 2: Find the email-sign-up block and truncate from its parent
+    // Strategy 3: Find known tab panel headings and remove from there
     // ---------------------------------------------------------------
-    const emailSignupSection = element.querySelector('.section.email-sign-up-v2-container');
-    if (emailSignupSection) {
-      let next = emailSignupSection.nextElementSibling;
+
+    // Strategy 1: Try section container selector
+    let cutoffElement = element.querySelector('.section.email-sign-up-v2-container');
+
+    // Strategy 2: Find the block itself and go up to its section container
+    if (!cutoffElement) {
+      const emailBlock = element.querySelector('.email-sign-up-v2');
+      if (emailBlock) {
+        cutoffElement = emailBlock.closest('.section') || emailBlock.parentElement;
+      }
+    }
+
+    if (cutoffElement) {
+      let next = cutoffElement.nextElementSibling;
       while (next) {
         const toRemove = next;
         next = next.nextElementSibling;
         toRemove.remove();
       }
     }
+
+    // Strategy 3: Content-based removal as fallback
+    // Remove duplicate tab panel content that starts with known headings
+    const allHeadings = element.querySelectorAll('h2');
+    allHeadings.forEach((h2) => {
+      const text = h2.textContent.trim();
+      // "Algarve Resorts (33)" or similar numbered resort list from Resorts tab
+      if (/resorts\s*\(\d+\)/i.test(text)) {
+        // Remove from this heading to end of its container or all following siblings
+        const container = h2.closest('.section') || h2.parentElement;
+        if (container && container.tagName !== 'BODY') {
+          container.remove();
+        } else {
+          // Remove heading and everything after it within parent
+          let next = h2.nextElementSibling;
+          while (next) {
+            const toRemove = next;
+            next = next.nextElementSibling;
+            toRemove.remove();
+          }
+          h2.remove();
+        }
+      }
+      // "accommodation options found" - Places to stay tab
+      if (/accommodation\s+options?\s+found/i.test(text)) {
+        const container = h2.closest('.section') || h2.parentElement;
+        if (container && container.tagName !== 'BODY') container.remove();
+      }
+    });
+
+    // Remove "Explore some of our great destinations" navigation section
+    element.querySelectorAll('h2, h3').forEach((heading) => {
+      if (/explore.*destinations/i.test(heading.textContent)) {
+        const container = heading.closest('.section') || heading.parentElement;
+        if (container && container.tagName !== 'BODY') container.remove();
+      }
+    });
 
     // Remove tracking pixels (Bing, AdNexus, DoubleClick, etc.)
     element.querySelectorAll('img').forEach((img) => {
@@ -82,11 +119,34 @@ export default function transform(hookName, element, payload) {
         || (src.includes('action/0?') && src.includes('ti='))
       ) {
         const parent = img.closest('p') || img.parentElement;
-        if (parent && parent.children.length === 1) {
+        if (parent && parent.children.length === 1 && parent.tagName !== 'BODY') {
           parent.remove();
         } else {
           img.remove();
         }
+      }
+    });
+
+    // Remove "Back to top" links and "Show more" buttons
+    element.querySelectorAll('a, button, p').forEach((el) => {
+      const text = el.textContent.trim().toLowerCase();
+      if (text === 'back to top' || text === 'show more things to do') {
+        const parent = el.closest('p') || el.parentElement;
+        if (parent && parent !== element && parent.children.length <= 1 && parent.textContent.trim().toLowerCase() === text) {
+          parent.remove();
+        } else {
+          el.remove();
+        }
+      }
+    });
+
+    // Clean up empty ULs left behind (but not inside content blocks)
+    element.querySelectorAll('ul').forEach((ul) => {
+      if (
+        ul.children.length === 0
+        && !ul.closest('.destination-description, .title-links, .icon-grid-v2, .accommodation-teaser, .resorts-teaser, .blog-teaser, .poi-teaser, .email-sign-up-v2')
+      ) {
+        ul.remove();
       }
     });
   }
@@ -95,10 +155,10 @@ export default function transform(hookName, element, payload) {
     // Remove non-authorable global chrome
     WebImporter.DOMUtils.remove(element, [
       // Header and navigation
-      'header.header-v2-wrapper',
+      'header',
       '.header-v2',
       // Footer
-      'footer.footer-v2-wrapper',
+      'footer',
       '.footer-v2',
       // Breadcrumbs
       '#breadcrumbs-section',
@@ -115,6 +175,13 @@ export default function transform(hookName, element, payload) {
       'noscript',
       'script',
     ]);
+
+    // Remove empty sections (sections with no meaningful content)
+    element.querySelectorAll('.section').forEach((section) => {
+      if (!section.textContent.trim() && !section.querySelector('img')) {
+        section.remove();
+      }
+    });
 
     // Clean tracking attributes
     element.querySelectorAll('[data-track]').forEach((el) => el.removeAttribute('data-track'));

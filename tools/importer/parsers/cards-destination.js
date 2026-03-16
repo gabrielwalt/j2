@@ -82,8 +82,9 @@ export default function parse(element, { document }) {
       element.before(p);
     }
 
-    // POI cards
-    const poiCards = element.querySelectorAll('.poi-card');
+    // POI cards - limit to first 3 (matches the Overview tab teaser on the original page)
+    const allPoiCards = element.querySelectorAll('.poi-card');
+    const poiCards = Array.from(allPoiCards).slice(0, 3);
     poiCards.forEach((card) => {
       const col1 = [];
       const picture = card.querySelector('.poi-image-wrapper picture, picture');
