@@ -2,7 +2,7 @@
 .destination-map {
   border: 1px solid #cfd4de;
   border-radius: 12px;
-  padding: 24px;
+  padding: 16px;
   background: var(--background-color);
 }
 

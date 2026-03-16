@@ -31,7 +31,7 @@
   margin: 0 0 16px;
 }
 
-@media (width >= 900px) {
+@media (width >= 992px) {
   .columns-destination > div {
     align-items: center;
     flex-direction: unset;
@@ -51,7 +51,7 @@
   gap: 24px;
 }
 
-@media (width >= 900px) {
+@media (width >= 992px) {
   .columns-destination.columns-destination-1-cols {
     grid-template-columns: repeat(3, 1fr);
     gap: 40px;

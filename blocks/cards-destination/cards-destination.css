@@ -7,13 +7,13 @@
   gap: 24px;
 }
 
-@media (width >= 600px) {
+@media (width >= 768px) {
   .cards-destination > ul {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (width >= 900px) {
+@media (width >= 992px) {
   .cards-destination > ul {
     grid-template-columns: repeat(3, 1fr);
     gap: 32px;
