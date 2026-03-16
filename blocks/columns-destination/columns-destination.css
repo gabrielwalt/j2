@@ -24,7 +24,7 @@
 .columns-destination h2 {
   font-size: 24px;
   line-height: 32px;
-  margin: 0 0 24px;
+  margin: 0 0 12px;
 }
 
 .columns-destination .columns-destination-text p {
@@ -105,6 +105,21 @@
 .columns-destination.columns-destination-1-cols .icon img {
   width: 24px;
   height: 24px;
+}
+
+/* Text column spacing (title offset from image top) */
+.columns-destination > div > div:not(.columns-destination-img-col) {
+  padding-top: 16px;
+}
+
+@media (width >= 992px) {
+  .columns-destination > div > div:not(.columns-destination-img-col) {
+    padding-top: 40px;
+  }
+
+  .columns-destination h2 {
+    margin: 0 0 24px;
+  }
 }
 
 /* Read more / Read less */

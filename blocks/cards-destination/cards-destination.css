@@ -28,14 +28,14 @@
 }
 
 .cards-destination .cards-destination-card-body {
-  padding: var(--card-padding);
+  padding: 24px 24px 16px;
 }
 
 .cards-destination .cards-destination-card-body h3 {
-  margin: 0 0 4px;
+  margin: 0;
   font-size: 18px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 28px;
 }
 
 .cards-destination .cards-destination-card-body h3 a {
@@ -54,7 +54,8 @@
   font-size: var(--body-font-size-s);
   font-weight: 600;
   color: var(--text-secondary-color);
-  margin: 0 0 4px;
+  padding: 12px 0;
+  margin: 0;
 }
 
 .cards-destination .cards-destination-card-body .cards-destination-location svg {
@@ -75,7 +76,7 @@
 .cards-destination .cards-destination-card-body ul {
   list-style: none;
   padding: 0;
-  margin: 0.5em 0 0;
+  margin: 0;
 }
 
 .cards-destination .cards-destination-card-body ul li {
