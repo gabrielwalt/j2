@@ -4,36 +4,36 @@ function addReadMore(textCol) {
 
   // Wrap paragraphs in a container for clamping
   const wrapper = document.createElement('div');
-  wrapper.className = 'columns-destination-text';
+  wrapper.className = 'columns-destination-text is-clamped';
   [...paragraphs].forEach((p) => wrapper.append(p));
   textCol.append(wrapper);
 
-  // Measure natural height, then clamp and compare with forced reflow
-  requestAnimationFrame(() => {
+  const heading = textCol.querySelector('h2');
+  const label = heading ? heading.textContent : '';
+
+  const btn = document.createElement('button');
+  btn.className = 'columns-destination-toggle';
+  btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('aria-label', `Read more about "${label}"`);
+  btn.textContent = 'Read more';
+  textCol.append(btn);
+
+  btn.addEventListener('click', () => {
+    const expanded = wrapper.classList.toggle('is-clamped');
+    btn.setAttribute('aria-expanded', String(!expanded));
+    btn.textContent = expanded ? 'Read more' : 'Read less';
+  });
+
+  // After fonts load and layout settles, remove clamp + button if not needed
+  document.fonts.ready.then(() => {
+    wrapper.classList.remove('is-clamped');
     const naturalHeight = wrapper.scrollHeight;
     wrapper.classList.add('is-clamped');
-    const clampedHeight = wrapper.offsetHeight; // force synchronous reflow
-
+    const clampedHeight = wrapper.offsetHeight;
     if (clampedHeight >= naturalHeight) {
       wrapper.classList.remove('is-clamped');
-      return;
+      btn.remove();
     }
-
-    const heading = textCol.querySelector('h2');
-    const label = heading ? heading.textContent : '';
-
-    const btn = document.createElement('button');
-    btn.className = 'columns-destination-toggle';
-    btn.setAttribute('aria-expanded', 'false');
-    btn.setAttribute('aria-label', `Read more about "${label}"`);
-    btn.textContent = 'Read more';
-    textCol.append(btn);
-
-    btn.addEventListener('click', () => {
-      const expanded = wrapper.classList.toggle('is-clamped');
-      btn.setAttribute('aria-expanded', String(!expanded));
-      btn.textContent = expanded ? 'Read more' : 'Read less';
-    });
   });
 }
 
