@@ -1,67 +1,51 @@
-.table-weather.block {
+.table-weather {
   width: 100%;
+}
+
+.table-weather-scroll {
+  display: flex;
+  gap: 24px;
   overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
 }
 
-.table-weather.block table {
-  width: 100%;
-  max-width: 100%;
-  border-collapse: collapse;
-  font-size: var(--body-font-size-xs);
+.table-weather-scroll::-webkit-scrollbar {
+  height: 4px;
 }
 
-@media (width >= 600px) {
-  .table-weather.block table {
-    font-size: var(--body-font-size-s);
-  }
+.table-weather-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-stone-dark);
+  border-radius: var(--radius-full);
+}
+
+.table-weather-card {
+  flex: 0 0 auto;
+  min-width: 80px;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  scroll-snap-align: start;
 }
 
 @media (width >= 900px) {
-  .table-weather.block table {
-    font-size: var(--body-font-size-m);
+  .table-weather-card {
+    min-width: 100px;
+    width: 100px;
   }
 }
 
-.table-weather.block table thead tr {
-  border-top: 2px solid;
-  border-bottom: 2px solid;
+.table-weather-temp {
+  font-size: var(--body-font-size-m);
+  font-weight: 600;
+  color: var(--text-color);
 }
 
-.table-weather.block table tbody tr {
-  border-bottom: 1px solid;
-}
-
-.table-weather.block table th {
-  font-weight: 700;
-}
-
-.table-weather.block table th,
-.table-weather.block table td {
-  padding: 0.5em;
-  text-align: left;
-}
-
-.table-weather table th p,
-.table-weather table td p {
-  margin: 0;
-}
-
-.table-weather table td p + p {
-  margin-top: 0.25em;
-}
-
-/* no header variant */
-.table-weather.block.no-header table tbody tr {
-  border-top: 1px solid;
-}
-
-/* striped variant */
-.table-weather.block.striped tbody tr:nth-child(odd) {
-  background-color: var(--overlay-background-color);
-}
-
-/* bordered variant */
-.table-weather.block.bordered table th,
-.table-weather.block.bordered table td {
-  border: 1px solid;
+.table-weather-month {
+  font-size: var(--body-font-size-m);
+  font-weight: 600;
+  color: var(--text-color);
 }

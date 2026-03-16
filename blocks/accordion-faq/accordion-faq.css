@@ -1,10 +1,12 @@
 .accordion-faq details {
-  border: 1px solid #dadada;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 /* stylelint-disable-next-line no-descending-specificity */
 .accordion-faq details + details {
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 .accordion-faq details p {
@@ -13,19 +15,25 @@
 
 .accordion-faq details summary {
   position: relative;
-  padding: 0 16px;
-  padding-right: 46px;
+  padding: 16px 46px 16px 16px;
   cursor: pointer;
   list-style: none;
   overflow: auto;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-base);
+  font-weight: 600;
+  font-size: var(--body-font-size-m);
+  color: var(--text-color);
 }
 
 .accordion-faq details[open] summary {
   background-color: var(--light-color);
 }
 
-.accordion-faq details summary:focus,
+.accordion-faq details summary:focus-visible {
+  outline: 2px solid var(--color-blue-base);
+  outline-offset: -2px;
+}
+
 .accordion-faq details summary:hover {
   background-color: var(--light-color);
 }
@@ -40,11 +48,11 @@
   top: 50%;
   right: 18px;
   transform: translateY(-50%) rotate(135deg);
-  width: 6px;
-  height: 6px;
-  border: 2px solid;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--text-secondary-color);
   border-width: 2px 2px 0 0;
-  transition: transform 0.2s;
+  transition: transform var(--transition-base);
 }
 
 .accordion-faq details[open] summary::after {
@@ -52,10 +60,16 @@
 }
 
 .accordion-faq details .accordion-faq-item-body {
-  padding: 0 16px;
+  padding: 0 16px 16px;
+}
+
+.accordion-faq details .accordion-faq-item-body p {
+  color: var(--text-secondary-color);
+  font-size: var(--body-font-size-s);
+  line-height: 1.5;
 }
 
 .accordion-faq details[open] .accordion-faq-item-body {
-  border-top: 1px solid #dadada;
+  border-top: 1px solid var(--border-color);
   background-color: var(--background-color);
 }

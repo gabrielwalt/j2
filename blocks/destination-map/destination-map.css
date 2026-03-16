@@ -1,33 +1,20 @@
-.destination-map > div {
+/* destination-map: resort links list */
+.destination-map ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 12px 16px;
 }
 
-.destination-map img {
-  width: 100%;
+.destination-map ul li a {
+  font-size: var(--body-font-size-s);
+  font-weight: 600;
+  color: var(--text-secondary-color);
+  text-decoration: underline;
 }
 
-.destination-map > div > div {
-  order: 1;
-}
-
-.destination-map > div > .destination-map-img-col {
-  order: 0;
-}
-
-.destination-map > div > .destination-map-img-col img {
-  display: block;
-}
-
-@media (width >= 900px) {
-  .destination-map > div {
-    align-items: center;
-    flex-direction: unset;
-    gap: 24px;
-  }
-
-  .destination-map > div > div {
-    flex: 1;
-    order: unset;
-  }
+.destination-map ul li a:hover {
+  color: var(--link-color);
 }

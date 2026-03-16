@@ -1,18 +1,4 @@
-export default function decorate(block) {
-  const cols = [...block.firstElementChild.children];
-  block.classList.add(`destination-map-${cols.length}-cols`);
-
-  // setup image columns
-  [...block.children].forEach((row) => {
-    [...row.children].forEach((col) => {
-      const pic = col.querySelector('picture');
-      if (pic) {
-        const picWrapper = pic.closest('div');
-        if (picWrapper && picWrapper.children.length === 1) {
-          // picture is only content in column
-          picWrapper.classList.add('destination-map-img-col');
-        }
-      }
-    });
-  });
+export default function decorate() {
+  // The destination-map block contains resort links in a list.
+  // No transformation needed - CSS handles the flex-wrap layout.
 }

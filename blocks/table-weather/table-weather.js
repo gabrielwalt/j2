@@ -1,32 +1,33 @@
 /*
  * Table Weather Block
- * Display weather data in a table format
- * https://www.hlx.live/developer/block-collection/table
+ * Display weather data as horizontal scrolling cards
  */
 
-/**
- *
- * @param {Element} block
- */
 export default async function decorate(block) {
-  const table = document.createElement('table');
-  const thead = document.createElement('thead');
-  const tbody = document.createElement('tbody');
-  const header = !block.classList.contains('no-header');
+  const rows = [...block.children];
+  if (rows.length < 2) return;
 
-  [...block.children].forEach((row, i) => {
-    const tr = document.createElement('tr');
+  const months = [...rows[0].children].map((c) => c.textContent.trim());
+  const temps = [...rows[1].children].map((c) => c.textContent.trim());
 
-    [...row.children].forEach((cell) => {
-      const td = document.createElement(i === 0 && header ? 'th' : 'td');
+  const scroll = document.createElement('div');
+  scroll.className = 'table-weather-scroll';
 
-      if (i === 0) td.setAttribute('scope', 'column');
-      td.innerHTML = cell.innerHTML;
-      tr.append(td);
-    });
-    if (i === 0 && header) thead.append(tr);
-    else tbody.append(tr);
+  months.forEach((month, i) => {
+    const card = document.createElement('div');
+    card.className = 'table-weather-card';
+
+    const temp = document.createElement('div');
+    temp.className = 'table-weather-temp';
+    temp.textContent = temps[i] || '';
+
+    const label = document.createElement('div');
+    label.className = 'table-weather-month';
+    label.textContent = month;
+
+    card.append(temp, label);
+    scroll.append(card);
   });
-  table.append(thead, tbody);
-  block.replaceChildren(table);
+
+  block.replaceChildren(scroll);
 }
