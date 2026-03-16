@@ -33,7 +33,9 @@
 
 .cards-destination .cards-destination-card-body h3 {
   margin-top: 0;
-  font-size: var(--heading-font-size-l);
+  margin-bottom: 0.25em;
+  font-size: var(--body-font-size-s);
+  font-weight: 400;
 }
 
 .cards-destination .cards-destination-card-body h3 a {
