@@ -312,33 +312,35 @@ function transformLandingPage(payload) {
     '.fragment', 'iframe', 'link', 'noscript', 'script', 'style',
   ]);
 
-  // Extract hero banner as clean image + h1
+  // Extract hero banner as a hero block (image + h1 overlay)
   const banner = main.querySelector('.image-banner');
   if (banner) {
     const img = banner.querySelector('img');
     const h1 = banner.querySelector('h1');
-    const frag = document.createDocumentFragment();
+    const cells = [];
     if (img) {
       const newImg = document.createElement('img');
       newImg.src = img.src || '';
       newImg.alt = h1?.textContent?.trim() || '';
-      const p = document.createElement('p');
-      p.append(newImg);
-      frag.append(p);
+      cells.push([[newImg]]);
     }
     if (h1) {
       const newH1 = document.createElement('h1');
       newH1.textContent = h1.textContent.trim();
-      frag.append(newH1);
+      cells.push([[newH1]]);
     }
-    banner.replaceWith(frag);
+    const heroBlock = WebImporter.Blocks.createBlock(document, { name: 'hero', cells });
+    banner.replaceWith(heroBlock);
   }
 
-  // Extract title-and-text as default content (h2 + p)
+  // Extract title-and-text as default content in a styled section (brand-background).
+  // Output: <hr> + h2 + p + section-metadata(style=brand-background) + <hr>
   main.querySelectorAll('.title-and-text').forEach((tat) => {
     const h2 = tat.querySelector('h2');
     const p = tat.querySelector('p');
     const frag = document.createDocumentFragment();
+    // Section break before
+    frag.append(document.createElement('hr'));
     if (h2) {
       const newH2 = document.createElement('h2');
       newH2.textContent = h2.textContent.trim();
@@ -349,6 +351,14 @@ function transformLandingPage(payload) {
       newP.textContent = p.textContent.trim();
       frag.append(newP);
     }
+    // Section metadata for light-blue background
+    const sectionMeta = WebImporter.Blocks.createBlock(document, {
+      name: 'Section Metadata',
+      cells: { style: 'brand-background' },
+    });
+    frag.append(sectionMeta);
+    // Section break after
+    frag.append(document.createElement('hr'));
     tat.replaceWith(frag);
   });
 

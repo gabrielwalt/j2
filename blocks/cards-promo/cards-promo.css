@@ -1,0 +1,66 @@
+/* cards-promo: horizontal promo card grid for destination landing page */
+.cards-promo > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (width >= 768px) {
+  .cards-promo > ul {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (width >= 992px) {
+  .cards-promo > ul {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+  }
+}
+
+.cards-promo > ul > li {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform var(--transition-base);
+}
+
+.cards-promo > ul > li:hover {
+  transform: translateY(-2px);
+}
+
+.cards-promo .cards-promo-card-image {
+  line-height: 0;
+}
+
+.cards-promo > ul > li img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+}
+
+.cards-promo .cards-promo-card-body {
+  padding: 12px;
+  text-align: center;
+}
+
+.cards-promo .cards-promo-card-body h3 {
+  margin: 0;
+  font-size: var(--body-font-size-s);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.cards-promo .cards-promo-card-body h3 a {
+  color: var(--text-secondary-color);
+  text-decoration: none;
+}
+
+.cards-promo .cards-promo-card-body h3 a:hover {
+  color: var(--link-color);
+  text-decoration: underline;
+}
