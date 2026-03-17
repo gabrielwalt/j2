@@ -27,10 +27,12 @@ export default function transform(hookName, element, payload) {
       if (dataSrc && (!img.getAttribute('src') || img.getAttribute('src') === '')) {
         img.setAttribute('src', dataSrc);
       }
+      img.removeAttribute('data-src');
       const dataSrcset = img.getAttribute('data-srcset');
       if (dataSrcset && !img.getAttribute('srcset')) {
         img.setAttribute('srcset', dataSrcset);
       }
+      if (dataSrcset) img.removeAttribute('data-srcset');
     });
 
     // Sanitize image URLs containing $Web$ or other Adobe Dynamic Media tokens
@@ -198,6 +200,43 @@ export default function transform(hookName, element, payload) {
         && !ul.closest('.destination-description, .title-links, .icon-grid-v2, .accommodation-teaser, .resorts-teaser, .blog-teaser, .poi-teaser, .email-sign-up-v2')
       ) {
         ul.remove();
+      }
+    });
+
+    // Proxy Sitecore media images to enforce max dimensions.
+    // Sitecore's /-/media/ CDN ignores resize query params (height, format, etc.)
+    // for large stock images, returning originals up to 22MB+. DA has a 20MB
+    // per-image upload limit. Route these through wsrv.nl proxy which enforces
+    // max 2000px width — keeps images well under 1MB while preserving quality.
+    // AEM's own CDN (createOptimizedPicture) handles further optimization at
+    // delivery time. Only targets /-/media/ paths; Scene7 and AEM media_xxx
+    // URLs are already correctly sized.
+    element.querySelectorAll('img').forEach((img) => {
+      const src = img.getAttribute('src') || '';
+      if (src.includes('/-/media/')) {
+        try {
+          const imgUrl = new URL(src, 'https://www.jet2holidays.com');
+          const baseUrl = `${imgUrl.origin}${imgUrl.pathname}`;
+          img.setAttribute('src', `https://wsrv.nl/?url=${encodeURIComponent(baseUrl)}&w=2000&fit=inside&output=jpg&q=85`);
+        } catch { /* ignore malformed URLs */ }
+      }
+    });
+
+    // Ensure Scene7 URLs have an explicit format declaration.
+    // Scene7 (media.jet2.com) serves images without file extensions in the URL
+    // path, e.g. /is/image/jet2/524678-beach_getty. DA requires a recognizable
+    // format indicator. Adding ?fmt=jpg (or &fmt=jpg if params exist) tells
+    // Scene7 to serve JPEG explicitly — the image is byte-identical. Do NOT add
+    // a .jpg extension to the path: Scene7 treats extensions as part of the
+    // asset name and returns a default placeholder.
+    element.querySelectorAll('img').forEach((img) => {
+      const src = img.getAttribute('src') || '';
+      if (src.includes('media.jet2.com/is/image/') && !src.includes('fmt=')) {
+        try {
+          const imgUrl = new URL(src);
+          imgUrl.searchParams.set('fmt', 'jpg');
+          img.setAttribute('src', imgUrl.toString());
+        } catch { /* ignore malformed URLs */ }
       }
     });
   }
