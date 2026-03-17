@@ -64,11 +64,16 @@ export default function decorate(block) {
     ol.append(li);
   });
 
-  // h1 = last breadcrumb label
-  const title = segmentToLabel(segments[segments.length - 1], segments.length === 1);
-  const h1 = document.createElement('h1');
-  h1.textContent = title;
-
   block.textContent = '';
-  block.append(ol, h1);
+
+  // Skip h1 on top-level /destinations page (hero provides the heading)
+  const isTopDestinations = segments.length === 1 && segments[0] === 'destinations';
+  if (isTopDestinations) {
+    block.append(ol);
+  } else {
+    const title = segmentToLabel(segments[segments.length - 1], segments.length === 1);
+    const h1 = document.createElement('h1');
+    h1.textContent = title;
+    block.append(ol, h1);
+  }
 }
