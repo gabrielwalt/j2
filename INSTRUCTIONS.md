@@ -44,6 +44,20 @@
 
 ---
 
+## Image URL Rules
+
+### Scene7 / Dynamic Media URLs (`media.jet2.com`)
+
+16. **NEVER add file extensions to Scene7 URLs** — Scene7 (Adobe Dynamic Media) treats extensions as part of the asset name. Adding `.jpg` to `media.jet2.com/is/image/jet2/MyImage` makes it resolve to a completely different (default placeholder) asset. The server returns the correct `Content-Type` header regardless of extension, so browsers render extensionless URLs fine.
+17. **NEVER rewrite image CDN origins** — This project has two image CDN sources: `www.jet2holidays.com/-/media/` (Sitecore) and `media.jet2.com/is/image/jet2/` (Scene7). Keep images at their original CDN origin. Scene7 images do NOT exist on `www.jet2holidays.com` and vice versa.
+18. **Strip Dynamic Media presets only** — Scene7 URLs may have a `:PresetName` suffix (e.g., `/image:DestCard`). Strip the colon and preset name, but do not modify anything else in the URL path.
+
+### Local Preview Path
+
+19. **Use `/content/` prefix for local preview** — The dev server runs with `--html-folder content`. Local `.plain.html` files are served at `http://localhost:3000/content/<page-path>` (e.g., `/content/destinations`). The path without `/content/` prefix proxies to the AEM backend, which may have different (or broken) content.
+
+---
+
 ## Block Reuse Guidelines
 
 **IMPORTANT**: When importing new pages or content, ALWAYS prioritize reusing existing blocks and their variants.

@@ -15,7 +15,12 @@ export default function decorate(block) {
     ul.append(li);
   });
   ul.querySelectorAll('picture > img').forEach((img) => {
+    const imgWidth = img.getAttribute('width');
+    const imgHeight = img.getAttribute('height');
     const optimizedPic = createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]);
+    const newImg = optimizedPic.querySelector('img');
+    if (imgWidth) newImg.setAttribute('width', imgWidth);
+    if (imgHeight) newImg.setAttribute('height', imgHeight);
     img.closest('picture').replaceWith(optimizedPic);
   });
 

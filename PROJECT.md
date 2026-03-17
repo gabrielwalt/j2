@@ -370,6 +370,49 @@ Applied via `section-metadata` block with `Style: <name>`. Defined in `/styles/s
 
 ---
 
+### cards-promo
+
+**Location**: `/blocks/cards-promo/`
+
+| Variant | Class | Purpose |
+|---------|-------|---------|
+| Default | `.cards-promo` | Destination promo card grid (image + linked heading) |
+
+**Authoring**:
+| Cards Promo |
+|---|
+| Image \| h3 linked destination name |
+
+**Features**: Image optimization via `createOptimizedPicture`. Separates image column (`.cards-promo-card-image`) from body (`.cards-promo-card-body`). `<ul>` list layout.
+
+**Responsive**: Auto-fills based on available width.
+
+**Parser**: `parsers/cards-promo.js` — Targets `.content-scrollable` selector.
+
+---
+
+### columns-promo
+
+**Location**: `/blocks/columns-promo/`
+
+| Variant | Class | Purpose |
+|---------|-------|---------|
+| Default | `.columns-promo` | Two-column promo: image + heading + text + CTA |
+| Brand | `.columns-promo.brand` | Same layout, uses `brand` section style (blue bg, white text) |
+
+**Authoring**:
+| Columns Promo |
+|---|
+| Image \| h2 heading, description, CTA link |
+
+**Features**: Column count class (`.columns-promo-N-cols`). Image column detection (`.columns-promo-img-col`).
+
+**Responsive**: Stacked (mobile) → side-by-side (desktop).
+
+**Parser**: `parsers/columns-promo.js` — Targets `.media-block` selector. Detects `.brand--beach` class for brand variant.
+
+---
+
 ### header
 
 **Location**: `/blocks/header/`
@@ -465,11 +508,59 @@ Defined in `page-templates.json`. Source: Jet2 Holidays destination area pages (
 | jet2-cleanup | `transformers/jet2-cleanup.js` | Site-wide DOM cleanup |
 | jet2-sections | `transformers/jet2-sections.js` | Section boundary detection |
 
+### Template: destinations-landing
+
+Defined in `import-destinations-landing.js`. Source: Jet2 Holidays destinations hub page.
+
+**URL**: `https://www.jet2holidays.com/destinations`
+
+**Sections**:
+
+| # | Section | Block(s) | Default Content | Style |
+|---|---------|----------|-----------------|-------|
+| 1 | Hero + Intro | hero (auto-built) | h2, p | — |
+| 2 | Popular Destinations | cards-promo | h2 | — |
+| 3 | Egypt Promo | columns-promo | — | — |
+| 4 | Hidden Gems | cards-promo | h2 | — |
+| 5 | Idyllic Islands | cards-promo | h2 | — |
+| 6 | City Breaks | cards-promo | h2 | — |
+| 7 | Sicily Promo | columns-promo | — | `brand` |
+
+**Parsers**: `cards-promo`, `columns-promo`
+
+**Runner**: `run-import-landing.js` (single-page runner with Playwright)
+
+### Parsers — Landing Page (2)
+
+| Parser | File | Source Selectors |
+|--------|------|------------------|
+| cards-promo | `parsers/cards-promo.js` | `.content-scrollable` |
+| columns-promo | `parsers/columns-promo.js` | `.media-block` |
+
 ### Bundling
 
+**Region pages** (bulk import):
 ```bash
 npx esbuild tools/importer/import-universal.js --bundle --format=iife --global-name=CustomImportScript --outfile=tools/importer/import-universal.bundle.js
 ```
+
+**Destinations landing page**:
+```bash
+npx esbuild tools/importer/import-destinations-landing.js --bundle --format=iife --global-name=CustomImportScript --outfile=tools/importer/import-destinations-landing.bundle.js
+```
+
+---
+
+## Image CDN Sources
+
+This project uses two separate image CDNs. They are NOT interchangeable.
+
+| CDN | URL Pattern | System | Notes |
+|-----|-------------|--------|-------|
+| Sitecore Media | `www.jet2holidays.com/-/media/...` | Sitecore Media Library | Standard file extensions (`.jpg`, `.png`) |
+| Scene7 / Dynamic Media | `media.jet2.com/is/image/jet2/...` | Adobe Dynamic Media | **No file extensions** — adding `.jpg` returns a default placeholder. Serves correct `Content-Type` header. May have `:PresetName` suffix to strip. |
+
+**Critical**: Never add file extensions to `media.jet2.com` URLs. Never rewrite `media.jet2.com` origins to `www.jet2holidays.com` — those paths don't exist on the main domain.
 
 ---
 
