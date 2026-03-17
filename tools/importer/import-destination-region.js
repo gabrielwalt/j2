@@ -7,6 +7,8 @@ import destinationMapParser from './parsers/destination-map.js';
 import cardsDestinationParser from './parsers/cards-destination.js';
 import tableWeatherParser from './parsers/table-weather.js';
 import accordionFaqParser from './parsers/accordion-faq.js';
+import cardsPromoParser from './parsers/cards-promo.js';
+import columnsPromoParser from './parsers/columns-promo.js';
 
 // TRANSFORMER IMPORTS
 import jet2CleanupTransformer from './transformers/jet2-cleanup.js';
@@ -19,6 +21,8 @@ const parsers = {
   'cards-destination': cardsDestinationParser,
   'table-weather': tableWeatherParser,
   'accordion-faq': accordionFaqParser,
+  'cards-promo': cardsPromoParser,
+  'columns-promo': columnsPromoParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION - Embedded from page-templates.json
@@ -218,6 +222,257 @@ function findBlocksOnPage(root, template) {
   return pageBlocks;
 }
 
+/**
+ * Detect if this is the destinations landing page (not a region/country/resort page).
+ * Landing page has .site-content with .image-banner and .content-scrollable elements
+ * but NO AEM .block elements. Region/country/resort pages have .block elements.
+ */
+function isLandingPage(doc) {
+  const hasSiteContent = !!doc.querySelector('.site-content');
+  const hasImageBanner = !!doc.querySelector('.image-banner');
+  const hasContentScrollable = !!doc.querySelector('.content-scrollable');
+  const hasAemBlocks = !!doc.querySelector('.block');
+  return hasSiteContent && hasImageBanner && hasContentScrollable && !hasAemBlocks;
+}
+
+/**
+ * Transform the destinations landing page.
+ * Scopes content to .site-content, extracts hero + intro + promo card sections
+ * + promo media-blocks, applying user rules:
+ * - Ignore myJet2 media-block
+ * - Ignore everything after "Discover a different side of Sicily" media-block
+ */
+function transformLandingPage(payload) {
+  const { document, url, params } = payload;
+
+  // Scope to .site-content > section to strip all header/nav/footer/overlay chrome.
+  // .site-content itself contains modals, mobile nav, search boxes, footer links, etc.
+  // The actual page content lives in the <section> child.
+  const contentSection = document.querySelector('.site-content > section');
+  if (contentSection) {
+    document.body.innerHTML = '';
+    document.body.appendChild(contentSection);
+  }
+  const main = document.body;
+
+  // Run beforeTransform cleanup (cookie banners, tracking pixels, image sanitization)
+  try {
+    jet2CleanupTransformer('beforeTransform', main, { ...payload, template: PAGE_TEMPLATE });
+  } catch (e) {
+    console.error('Landing page cleanup beforeTransform failed:', e);
+  }
+
+  // Remove myJet2 media-block (uses .media-block--reverse or wrapped in .media-block-table)
+  main.querySelectorAll('.media-block-table').forEach((el) => el.remove());
+  main.querySelectorAll('.media-block--reverse').forEach((el) => el.remove());
+  // Also catch by content: empty heading or login links
+  main.querySelectorAll('.media-block').forEach((mb) => {
+    const heading = mb.querySelector('.media-block__heading, h2');
+    const text = heading?.textContent?.trim() || '';
+    if (!text) {
+      const loginLink = mb.querySelector('a[href*="login"], a[href*="myjet2"]');
+      if (loginLink) mb.remove();
+    }
+  });
+
+  // Remove "Recently viewed" section
+  main.querySelectorAll('.section-recent-hotel').forEach((el) => el.remove());
+
+  // Content cutoff: find "Discover a different side of Sicily" media-block,
+  // keep it but remove everything after it
+  let sicilyBlock = null;
+  main.querySelectorAll('.media-block').forEach((mb) => {
+    const heading = mb.querySelector('.media-block__heading, h2');
+    if (heading && /sicily/i.test(heading.textContent)) {
+      sicilyBlock = mb;
+    }
+  });
+  if (sicilyBlock) {
+    const cutoffContainer = sicilyBlock.closest('.padding--bottom') || sicilyBlock.parentElement;
+    let next = cutoffContainer.nextElementSibling;
+    while (next) {
+      const toRemove = next;
+      next = next.nextElementSibling;
+      toRemove.remove();
+    }
+    // Remove siblings after the Sicily block within its container too
+    let nextInner = sicilyBlock.nextElementSibling;
+    while (nextInner) {
+      const toRemove = nextInner;
+      nextInner = nextInner.nextElementSibling;
+      toRemove.remove();
+    }
+  }
+
+  // Remove remaining global chrome that survived the .site-content scoping
+  WebImporter.DOMUtils.remove(main, [
+    'header', '.header-v2', 'footer', '.footer-v2',
+    '#breadcrumbs-section', '[class*="breadcrumbs"]',
+    '#search-bar-section', '.search-bar-v2', '.search-bar-v2-wrapper',
+    '.fragment', 'iframe', 'link', 'noscript', 'script', 'style',
+  ]);
+
+  // Extract hero banner as clean image + h1
+  const banner = main.querySelector('.image-banner');
+  if (banner) {
+    const img = banner.querySelector('img');
+    const h1 = banner.querySelector('h1');
+    const frag = document.createDocumentFragment();
+    if (img) {
+      const newImg = document.createElement('img');
+      newImg.src = img.src || '';
+      newImg.alt = h1?.textContent?.trim() || '';
+      const p = document.createElement('p');
+      p.append(newImg);
+      frag.append(p);
+    }
+    if (h1) {
+      const newH1 = document.createElement('h1');
+      newH1.textContent = h1.textContent.trim();
+      frag.append(newH1);
+    }
+    banner.replaceWith(frag);
+  }
+
+  // Extract title-and-text as default content (h2 + p)
+  main.querySelectorAll('.title-and-text').forEach((tat) => {
+    const h2 = tat.querySelector('h2');
+    const p = tat.querySelector('p');
+    const frag = document.createDocumentFragment();
+    if (h2) {
+      const newH2 = document.createElement('h2');
+      newH2.textContent = h2.textContent.trim();
+      frag.append(newH2);
+    }
+    if (p) {
+      const newP = document.createElement('p');
+      newP.textContent = p.textContent.trim();
+      frag.append(newP);
+    }
+    tat.replaceWith(frag);
+  });
+
+  // Extract section headings from .section > .wrapper > h2 (appear before each carousel)
+  main.querySelectorAll('.section .section-head__title, .section .section-head').forEach((heading) => {
+    const text = heading.textContent.trim();
+    if (text) {
+      const h2 = document.createElement('h2');
+      h2.textContent = text;
+      const sectionDiv = heading.closest('.section');
+      if (sectionDiv) sectionDiv.replaceWith(h2);
+    }
+  });
+
+  // Parse cards-promo blocks (content-scrollable carousels)
+  main.querySelectorAll('.content-scrollable').forEach((el) => {
+    try {
+      cardsPromoParser(el, { document, url, params });
+    } catch (e) {
+      console.error('cards-promo parser failed:', e);
+    }
+  });
+
+  // Parse columns-promo blocks (media-block promos)
+  main.querySelectorAll('.media-block').forEach((el) => {
+    try {
+      columnsPromoParser(el, { document, url, params });
+    } catch (e) {
+      console.error('columns-promo parser failed:', e);
+    }
+  });
+
+  // Run afterTransform cleanup
+  try {
+    jet2CleanupTransformer('afterTransform', main, { ...payload, template: PAGE_TEMPLATE });
+  } catch (e) {
+    console.error('Landing page cleanup afterTransform failed:', e);
+  }
+
+  // Add section breaks before each h2 that follows a block table
+  const allChildren = Array.from(main.children);
+  for (let i = 1; i < allChildren.length; i++) {
+    const child = allChildren[i];
+    const prev = allChildren[i - 1];
+    if (child.tagName === 'H2' && prev.tagName === 'TABLE' && prev.querySelector('th')) {
+      child.before(document.createElement('hr'));
+    }
+  }
+
+  // Remove empty wrappers left behind
+  main.querySelectorAll('.padding--bottom, .wrapper, .section').forEach((el) => {
+    if (!el.textContent.trim() && !el.querySelector('img, table')) {
+      el.remove();
+    }
+  });
+  // Unwrap remaining .padding--bottom containers
+  main.querySelectorAll('.padding--bottom').forEach((pad) => {
+    while (pad.firstChild) pad.before(pad.firstChild);
+    pad.remove();
+  });
+
+  // Clean up tracking attributes and empty elements
+  main.querySelectorAll('[data-track]').forEach((el) => el.removeAttribute('data-track'));
+  main.querySelectorAll('[onclick]').forEach((el) => el.removeAttribute('onclick'));
+  main.querySelectorAll('[data-component]').forEach((el) => el.removeAttribute('data-component'));
+  main.querySelectorAll('div, section').forEach((el) => {
+    if (!el.textContent.trim() && !el.querySelector('img, table, hr')) {
+      el.remove();
+    }
+  });
+
+  // Constrain image sizes
+  main.querySelectorAll('img').forEach((img) => {
+    const src = img.getAttribute('src') || '';
+    let width = 0;
+    const widMatch = src.match(/[?&]wid=(\d+)/);
+    if (widMatch) width = parseInt(widMatch[1], 10);
+    if (width > 0 && width <= 1200) {
+      img.setAttribute('width', String(width));
+    } else if (!img.getAttribute('width')) {
+      img.setAttribute('width', '400');
+    }
+  });
+
+  // Remove tracking pixels
+  main.querySelectorAll('img').forEach((img) => {
+    const src = img.getAttribute('src') || '';
+    if (
+      src.includes('bat.bing.com') || src.includes('adnxs.com')
+      || src.includes('doubleclick.net') || src.includes('setuid?')
+      || src.includes('facebook.com/tr')
+      || (src.includes('action/0?') && src.includes('ti='))
+    ) {
+      const parent = img.closest('p');
+      if (parent && parent.children.length <= 1 && !parent.textContent.trim()) {
+        parent.remove();
+      } else {
+        img.remove();
+      }
+    }
+  });
+
+  // Apply WebImporter built-in rules
+  main.appendChild(document.createElement('hr'));
+  WebImporter.rules.createMetadata(main, document);
+  WebImporter.rules.transformBackgroundImages(main, document);
+  WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
+
+  // Generate path
+  const path = WebImporter.FileUtils.sanitizePath(
+    new URL(params.originalURL).pathname.replace(/\/$/, '').replace(/\.html$/, '')
+  );
+
+  return [{
+    element: main,
+    path,
+    report: {
+      title: document.title,
+      template: 'destinations-landing',
+      blocks: ['cards-promo', 'columns-promo'],
+    },
+  }];
+}
+
 // EXPORT DEFAULT CONFIGURATION
 export default {
   /**
@@ -225,6 +480,12 @@ export default {
    */
   transform: (payload) => {
     const { document, url, html, params } = payload;
+
+    // Detect landing page and branch to dedicated handler
+    if (isLandingPage(document)) {
+      console.log('[Import] Detected destinations landing page — using landing page transform');
+      return transformLandingPage(payload);
+    }
 
     const main = document.body;
 
