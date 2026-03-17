@@ -19,6 +19,17 @@ export default function transform(hookName, element, payload) {
       '.ribbon-banner-wrapper',
     ]);
 
+    // Sanitize image URLs containing $Web$ or other Adobe Dynamic Media tokens
+    // These contain $ which breaks helix-importer regex construction
+    element.querySelectorAll('img[src*="$"], source[srcset*="$"]').forEach((el) => {
+      if (el.tagName === 'IMG' && el.src) {
+        el.src = el.src.replace(/\?\$[^$]*\$/, '');
+      }
+      if (el.srcset) {
+        el.srcset = el.srcset.replace(/\?\$[^$]*\$/g, '');
+      }
+    });
+
     // Remove "Skip to main content" link
     element.querySelectorAll('a[href="#main-content"]').forEach((a) => {
       const parent = a.closest('p') || a.parentElement;
