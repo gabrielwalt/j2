@@ -9,14 +9,16 @@ export default function decorate(block) {
     const li = document.createElement('li');
     while (row.firstElementChild) li.append(row.firstElementChild);
     [...li.children].forEach((div) => {
-      if (div.children.length === 1 && div.querySelector('picture')) div.className = 'cards-destination-card-image';
+      if (div.children.length === 1 && div.querySelector('picture, img')) div.className = 'cards-destination-card-image';
       else div.className = 'cards-destination-card-body';
     });
     ul.append(li);
   });
-  ul.querySelectorAll('picture > img').forEach((img) => {
+  ul.querySelectorAll('.cards-destination-card-image img').forEach((img) => {
+    const pic = img.closest('picture');
     const optimizedPic = createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]);
-    img.closest('picture').replaceWith(optimizedPic);
+    if (pic) pic.replaceWith(optimizedPic);
+    else img.replaceWith(optimizedPic);
   });
 
   // Add pin icon to location paragraph when followed by more content (another p or a list)

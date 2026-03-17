@@ -130,6 +130,10 @@
 }
 
 /* Text column spacing */
+.columns-destination.columns-destination-2-cols > div > div:not(.columns-destination-img-col) p {
+  margin: 0;
+}
+
 .columns-destination.columns-destination-2-cols > div > div:not(.columns-destination-img-col) {
   padding: 16px 0 0;
 }
@@ -200,6 +204,6 @@
 .columns-destination .columns-destination-disclaimer {
   font-size: var(--body-font-size-xs);
   color: var(--text-secondary-color);
-  margin: 12px 0 0;
+  margin: 16px 0 0;
   line-height: 1.5;
 }

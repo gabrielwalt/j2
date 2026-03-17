@@ -54,7 +54,7 @@
   font-size: var(--body-font-size-s);
   font-weight: 600;
   color: var(--text-secondary-color);
-  padding: 12px 0;
+  padding: 12px 0 0;
   margin: 0;
 }
 
@@ -67,10 +67,18 @@
   stroke-width: 2;
 }
 
+.cards-destination .cards-destination-card-image p {
+  margin: 0;
+}
+
 .cards-destination .cards-destination-card-body p {
   font-size: var(--body-font-size-s);
   color: var(--text-secondary-color);
   margin-top: 0.25em;
+}
+
+.cards-destination .cards-destination-card-body p:not([class]) {
+  padding-top: 12px;
 }
 
 .cards-destination .cards-destination-card-body ul {

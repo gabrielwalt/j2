@@ -5,7 +5,7 @@
 
 .table-weather-scroll {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -23,18 +23,18 @@
 }
 
 .table-weather-card {
-  flex: 0 0 100px;
+  flex: 1 1 0;
+  min-width: 70px;
   display: flex;
   flex-direction: column;
   align-items: center;
   scroll-snap-align: start;
-  width: 100px;
 }
 
 .table-weather-bar {
   width: 100%;
   background-color: #f8f9fc;
-  border-radius: 6px;
+  border-radius: 12px;
   display: grid;
   justify-items: center;
   align-content: center;
