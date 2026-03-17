@@ -149,7 +149,7 @@
 /* Read more / Read less */
 .columns-destination-text {
   overflow: hidden;
-  transition: max-height var(--transition-slow) ease;
+  transition: max-height 400ms ease;
 }
 
 .columns-destination-text.is-clamped {
