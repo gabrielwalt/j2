@@ -33,10 +33,38 @@ function addReadMore(textCol) {
   btn.textContent = 'Read more';
   textCol.append(btn);
 
+  let clampedH = 0;
+
   btn.addEventListener('click', () => {
-    const expanded = wrapper.classList.toggle('is-clamped');
-    btn.setAttribute('aria-expanded', String(!expanded));
-    btn.textContent = expanded ? 'Read more' : 'Read less';
+    const isClamped = wrapper.classList.contains('is-clamped');
+
+    if (isClamped) {
+      // Expanding: lock current height, remove clamp, animate to full
+      const startH = wrapper.offsetHeight;
+      wrapper.style.maxHeight = `${startH}px`;
+      wrapper.classList.remove('is-clamped');
+      const endH = wrapper.scrollHeight;
+      // eslint-disable-next-line no-unused-expressions
+      wrapper.offsetHeight; // force reflow so transition triggers
+      wrapper.style.maxHeight = `${endH}px`;
+      wrapper.addEventListener('transitionend', () => {
+        wrapper.style.maxHeight = '';
+      }, { once: true });
+      btn.setAttribute('aria-expanded', 'true');
+      btn.textContent = 'Read less';
+    } else {
+      // Collapsing: lock current height, animate down, re-clamp
+      wrapper.style.maxHeight = `${wrapper.scrollHeight}px`;
+      // eslint-disable-next-line no-unused-expressions
+      wrapper.offsetHeight; // force reflow so transition triggers
+      wrapper.style.maxHeight = `${clampedH}px`;
+      wrapper.addEventListener('transitionend', () => {
+        wrapper.classList.add('is-clamped');
+        wrapper.style.maxHeight = '';
+      }, { once: true });
+      btn.setAttribute('aria-expanded', 'false');
+      btn.textContent = 'Read more';
+    }
   });
 
   // Remove clamp + button if content is short enough.
@@ -46,8 +74,8 @@ function addReadMore(textCol) {
       wrapper.classList.remove('is-clamped');
       const naturalHeight = wrapper.scrollHeight;
       wrapper.classList.add('is-clamped');
-      const clampedHeight = wrapper.offsetHeight;
-      if (clampedHeight >= naturalHeight) {
+      clampedH = wrapper.offsetHeight;
+      if (clampedH >= naturalHeight) {
         wrapper.classList.remove('is-clamped');
         btn.remove();
       }

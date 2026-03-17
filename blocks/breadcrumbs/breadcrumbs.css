@@ -1,6 +1,6 @@
 /* breadcrumbs block */
 .breadcrumbs {
-  padding: 20px 0 32px;
+  padding: 0;
 }
 
 .breadcrumbs ol {
@@ -55,6 +55,6 @@
   font-weight: 600;
   line-height: 38px;
   color: var(--text-color);
-  margin: 0;
+  margin: 20px 0 0;
   padding: 0;
 }
