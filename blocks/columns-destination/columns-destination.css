@@ -204,6 +204,7 @@
 .columns-destination .columns-destination-disclaimer {
   font-size: var(--body-font-size-xs);
   color: var(--text-secondary-color);
-  margin: 16px 0 0;
+  margin: 0;
+  padding-top: 16px;
   line-height: 1.5;
 }
