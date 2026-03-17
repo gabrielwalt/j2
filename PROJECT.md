@@ -505,7 +505,7 @@ Defined in `page-templates.json`. Source: Jet2 Holidays destination area pages (
 
 | Transformer | File | Purpose |
 |-------------|------|---------|
-| jet2-cleanup | `transformers/jet2-cleanup.js` | Site-wide DOM cleanup |
+| jet2-cleanup | `transformers/jet2-cleanup.js` | Site-wide DOM cleanup: cookie/consent removal, lazy-load activation (`data-src` → `src` with `data-src` removal), Dynamic Media `$Web$` token sanitization, tab panel removal (Overview only), tracking pixel removal, `/-/media/` image proxy via wsrv.nl (max 2000px), Scene7 `?fmt=jpg` addition |
 | jet2-sections | `transformers/jet2-sections.js` | Section boundary detection |
 
 ### Template: destinations-landing
@@ -557,10 +557,10 @@ This project uses two separate image CDNs. They are NOT interchangeable.
 
 | CDN | URL Pattern | System | Notes |
 |-----|-------------|--------|-------|
-| Sitecore Media | `www.jet2holidays.com/-/media/...` | Sitecore Media Library | Standard file extensions (`.jpg`, `.png`) |
-| Scene7 / Dynamic Media | `media.jet2.com/is/image/jet2/...` | Adobe Dynamic Media | **No file extensions** — adding `.jpg` returns a default placeholder. Serves correct `Content-Type` header. May have `:PresetName` suffix to strip. |
+| Sitecore Media | `www.jet2holidays.com/-/media/...` | Sitecore Media Library | Standard file extensions (`.jpg`, `.png`). **Ignores all resize query params** — always returns full original (up to 22MB+). Proxied via `wsrv.nl` in import. |
+| Scene7 / Dynamic Media | `media.jet2.com/is/image/jet2/...` | Adobe Dynamic Media | **No file extensions in path** — adding `.jpg` to path returns a default placeholder. Use `?fmt=jpg` query param instead (image is byte-identical). May have `:PresetName` suffix to strip. Auto-added by `jet2-cleanup.js`. |
 
-**Critical**: Never add file extensions to `media.jet2.com` URLs. Never rewrite `media.jet2.com` origins to `www.jet2holidays.com` — those paths don't exist on the main domain.
+**Critical**: Never add file extensions to `media.jet2.com` URL **paths** — use `?fmt=jpg` query param instead. Never rewrite `media.jet2.com` origins to `www.jet2holidays.com` — those paths don't exist on the main domain. Sitecore `/-/media/` images are auto-proxied through `wsrv.nl` (max 2000px wide) in `jet2-cleanup.js` to stay under DA's 20MB limit.
 
 ---
 
