@@ -317,14 +317,34 @@ export default {
       }
     });
 
-    // 14. Apply WebImporter built-in rules
+    // 14. Clean up image URLs
+    // Strip Dynamic Media preset suffix (":PresetName") from URL paths — the colon
+    // is just a rendering hint, not part of the actual image path.
+    // Do NOT add .jpg extension to Scene7 URLs — Scene7 treats extensions as part of
+    // the asset name, so adding .jpg returns a default placeholder instead of the
+    // actual image. Browsers render extensionless URLs fine via Content-Type header.
+    // Keep images at their original CDN origin (media.jet2.com) — those URLs work
+    // cross-origin in <img> tags and rewriting to www.jet2holidays.com breaks them.
+    main.querySelectorAll('img').forEach((img) => {
+      const src = img.getAttribute('src') || '';
+      try {
+        const imgUrl = new URL(src);
+        // Strip Dynamic Media preset suffix from path (e.g. /image:Preset → /image)
+        const cleanPath = imgUrl.pathname.replace(/:[\w-]+$/, '');
+        if (imgUrl.pathname !== cleanPath) {
+          img.setAttribute('src', `${imgUrl.origin}${cleanPath}${imgUrl.search}`);
+        }
+      } catch { /* ignore malformed URLs */ }
+    });
+
+    // 15. Apply WebImporter built-in rules
     const hr = document.createElement('hr');
     main.appendChild(hr);
     WebImporter.rules.createMetadata(main, document);
     WebImporter.rules.transformBackgroundImages(main, document);
     WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
 
-    // 15. Generate sanitized path
+    // 16. Generate sanitized path
     const path = WebImporter.FileUtils.sanitizePath(
       new URL(params.originalURL).pathname.replace(/\/$/, '').replace(/\.html$/, '')
     );

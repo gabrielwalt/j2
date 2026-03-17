@@ -19,6 +19,20 @@ export default function transform(hookName, element, payload) {
       '.ribbon-banner-wrapper',
     ]);
 
+    // Activate lazy-loaded images: copy data-src → src, data-srcset → srcset
+    // Jet2 uses a custom lazy loader that keeps real URLs in data-src/data-srcset
+    // and leaves src empty. Without this, images import as "about:error".
+    element.querySelectorAll('img[data-src]').forEach((img) => {
+      const dataSrc = img.getAttribute('data-src');
+      if (dataSrc && (!img.getAttribute('src') || img.getAttribute('src') === '')) {
+        img.setAttribute('src', dataSrc);
+      }
+      const dataSrcset = img.getAttribute('data-srcset');
+      if (dataSrcset && !img.getAttribute('srcset')) {
+        img.setAttribute('srcset', dataSrcset);
+      }
+    });
+
     // Sanitize image URLs containing $Web$ or other Adobe Dynamic Media tokens
     // These contain $ which breaks helix-importer regex construction
     element.querySelectorAll('img[src*="$"], source[srcset*="$"]').forEach((el) => {

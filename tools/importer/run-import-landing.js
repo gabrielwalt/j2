@@ -64,6 +64,23 @@ async function fullPageScroll(page) {
     }
   });
 
+  // Add CORS headers to cross-origin media.jet2.com images so the browser
+  // can load them without CORS restrictions during import.
+  await page.route('**/media.jet2.com/**', async (route) => {
+    try {
+      const response = await route.fetch();
+      await route.fulfill({
+        response,
+        headers: {
+          ...response.headers(),
+          'access-control-allow-origin': '*',
+        },
+      });
+    } catch {
+      await route.continue();
+    }
+  });
+
   try {
     try {
       await page.goto(URL_TO_IMPORT, { waitUntil: 'networkidle', timeout: 60000 });
@@ -79,11 +96,50 @@ async function fullPageScroll(page) {
       if (btn) { await btn.click(); await page.waitForTimeout(1000); }
     } catch {}
 
+    // Set crossOrigin="anonymous" on all lazy images BEFORE scroll triggers
+    // Jet2's lazy loader. This ensures the browser makes CORS requests so
+    // canvas can read pixel data later for media_xxx hash generation.
+    await page.evaluate(() => {
+      document.querySelectorAll('img[data-src]').forEach((img) => {
+        img.crossOrigin = 'anonymous';
+      });
+    });
+
     // Thorough scroll to trigger lazy loading
     await fullPageScroll(page);
 
     // Extra wait for dynamic content
     await page.waitForTimeout(5000);
+
+    // Activate any remaining lazy images not triggered by scroll.
+    const lazyCount = await page.evaluate(() => {
+      let count = 0;
+      document.querySelectorAll('img[data-src]').forEach((img) => {
+        const dataSrc = img.getAttribute('data-src');
+        if (dataSrc && (!img.src || img.naturalWidth === 0)) {
+          img.crossOrigin = 'anonymous';
+          img.src = dataSrc;
+          count++;
+        }
+      });
+      return count;
+    });
+    if (lazyCount > 0) {
+      console.log(`  Activated ${lazyCount} lazy images, waiting for load...`);
+      // Wait for all images to finish loading (or timeout after 15s)
+      await page.evaluate(() => {
+        const imgs = Array.from(document.querySelectorAll('img[data-src]'));
+        return Promise.all(imgs.map((img) => {
+          if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+            setTimeout(resolve, 15000);
+          });
+        }));
+      });
+      console.log('  All lazy images loaded.');
+    }
 
     // Inject helix importer
     await page.evaluate(s => {
