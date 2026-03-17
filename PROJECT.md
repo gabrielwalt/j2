@@ -196,6 +196,24 @@ Applied via `section-metadata` block with `Style: <name>`. Defined in `/styles/s
 
 ---
 
+### breadcrumbs
+
+**Location**: `/blocks/breadcrumbs/`
+
+| Variant | Class | Purpose |
+|---------|-------|---------|
+| Default | `.breadcrumbs` | Breadcrumb trail + h1 page title, auto-generated from URL path |
+
+**Authoring**: Auto-built by `scripts.js` on every page. No authored content needed — the trail and h1 are derived from the URL path segments.
+
+**Features**: Schema.org BreadcrumbList structured data. Chevron SVG separators. Links for all ancestors, plain text for current page. h1 matches last breadcrumb label. Segment-to-label conversion: `"algarve"` → `"Algarve holidays"`, `"destinations"` → `"Destinations"`.
+
+**Styles**: Breadcrumb links 14px/600/underline in secondary text color. Chevron separators 16px with 12px horizontal margin. h1 is 30px/600/38px line-height. Block padding 20px top, 32px bottom.
+
+**Responsive**: Single layout at all widths.
+
+---
+
 ### accordion-faq
 
 **Location**: `/blocks/accordion-faq/`
