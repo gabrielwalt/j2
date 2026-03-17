@@ -1,22 +1,12 @@
 /* columns-promo: full-width promo banner (image + heading + text + CTA) */
-main .columns-promo-container {
-  max-width: unset;
-  padding: 0;
-}
-
-main > div:has(.columns-promo) {
-  margin: 0;
-  max-width: unset;
-}
-
 .columns-promo {
-  background-color: var(--color-stone-light);
+  background-color: #f2f2f2;
 }
 
 .columns-promo > div {
   display: flex;
   flex-direction: column;
-  max-width: var(--container-max-width);
+  max-width: var(--content-max-width);
   margin: 0 auto;
 }
 
@@ -41,16 +31,16 @@ main > div:has(.columns-promo) {
 }
 
 .columns-promo h2 {
-  font-size: var(--heading-font-size-xl);
+  font-size: 24px;
   font-weight: 600;
-  color: var(--text-color);
+  color: #444;
   margin: 0 0 12px;
 }
 
 .columns-promo p {
-  font-size: var(--body-font-size-m);
-  color: var(--text-secondary-color);
-  line-height: 1.5;
+  font-size: 16px;
+  color: #444;
+  line-height: 1.44;
   margin: 0 0 16px;
 }
 
@@ -62,11 +52,15 @@ main > div:has(.columns-promo) {
 .columns-promo a.button:any-link {
   background-color: var(--accent-color);
   border-color: var(--accent-color);
-  color: var(--text-color);
-  font-size: var(--body-font-size-l);
-  padding: var(--button-padding-lg);
+  color: #203240;
+  font-size: 20px;
+  font-weight: 400;
+  padding: 16px 12px;
   width: 100%;
+  max-width: 320px;
   text-align: center;
+  border-radius: 4px;
+  line-height: 1;
 }
 
 .columns-promo a.button:hover {
@@ -74,11 +68,40 @@ main > div:has(.columns-promo) {
   border-color: var(--accent-hover-color);
 }
 
+/* Brand variant — blue background with white text (e.g. Sicily promo) */
+.columns-promo.brand {
+  background-color: #2b6fb1;
+}
+
+.columns-promo.brand h2 {
+  color: #fff;
+}
+
+.columns-promo.brand p {
+  color: #fff;
+}
+
+.columns-promo.brand a.button:any-link {
+  color: #fff;
+}
+
+/* Edge-to-edge layout overrides */
+main .columns-promo-container {
+  max-width: unset;
+  margin: 0;
+  padding: 0;
+}
+
+.columns-promo-container .columns-promo-wrapper {
+  max-width: unset;
+  padding: 0;
+}
+
 @media (width >= 992px) {
   .columns-promo > div {
     flex-direction: row-reverse;
     align-items: center;
-    padding: 24px;
+    padding: 24px 48px;
     gap: 0;
   }
 
@@ -87,8 +110,12 @@ main > div:has(.columns-promo) {
     order: unset;
   }
 
+  .columns-promo > div > .columns-promo-img-col {
+    max-width: 50%;
+  }
+
   .columns-promo > div > div:not(.columns-promo-img-col) {
-    padding: 0 36px 0 0;
+    padding: 24px 48px 24px 0;
   }
 
   .columns-promo a.button:any-link {

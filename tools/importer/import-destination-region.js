@@ -312,8 +312,11 @@ function transformLandingPage(payload) {
     '.fragment', 'iframe', 'link', 'noscript', 'script', 'style',
   ]);
 
-  // Extract hero banner as a hero block (image + h1 overlay)
+  // Extract hero banner + title-and-text as a single hero block.
+  // The brand-background intro (h2 + p) is part of the hero, shown
+  // below the image in a light-blue band.
   const banner = main.querySelector('.image-banner');
+  const titleAndText = main.querySelector('.title-and-text');
   if (banner) {
     const img = banner.querySelector('img');
     const h1 = banner.querySelector('h1');
@@ -329,38 +332,29 @@ function transformLandingPage(payload) {
       newH1.textContent = h1.textContent.trim();
       cells.push([[newH1]]);
     }
+    // Merge title-and-text content into the hero block
+    if (titleAndText) {
+      const h2 = titleAndText.querySelector('h2');
+      const p = titleAndText.querySelector('p');
+      const introContent = [];
+      if (h2) {
+        const newH2 = document.createElement('h2');
+        newH2.textContent = h2.textContent.trim();
+        introContent.push(newH2);
+      }
+      if (p) {
+        const newP = document.createElement('p');
+        newP.textContent = p.textContent.trim();
+        introContent.push(newP);
+      }
+      if (introContent.length > 0) {
+        cells.push([introContent]);
+      }
+      titleAndText.remove();
+    }
     const heroBlock = WebImporter.Blocks.createBlock(document, { name: 'hero', cells });
     banner.replaceWith(heroBlock);
   }
-
-  // Extract title-and-text as default content in a styled section (brand-background).
-  // Output: <hr> + h2 + p + section-metadata(style=brand-background) + <hr>
-  main.querySelectorAll('.title-and-text').forEach((tat) => {
-    const h2 = tat.querySelector('h2');
-    const p = tat.querySelector('p');
-    const frag = document.createDocumentFragment();
-    // Section break before
-    frag.append(document.createElement('hr'));
-    if (h2) {
-      const newH2 = document.createElement('h2');
-      newH2.textContent = h2.textContent.trim();
-      frag.append(newH2);
-    }
-    if (p) {
-      const newP = document.createElement('p');
-      newP.textContent = p.textContent.trim();
-      frag.append(newP);
-    }
-    // Section metadata for light-blue background
-    const sectionMeta = WebImporter.Blocks.createBlock(document, {
-      name: 'Section Metadata',
-      cells: { style: 'brand-background' },
-    });
-    frag.append(sectionMeta);
-    // Section break after
-    frag.append(document.createElement('hr'));
-    tat.replaceWith(frag);
-  });
 
   // Extract section headings from .section > .wrapper > h2 (appear before each carousel)
   main.querySelectorAll('.section .section-head__title, .section .section-head').forEach((heading) => {

@@ -63,8 +63,12 @@ export default function parse(element, { document }) {
     cells.push([col1, col2]);
   }
 
+  // Detect brand--beach variant (blue background with white text, e.g. Sicily promo)
+  const isBrand = element.classList.contains('brand--beach')
+    || element.closest('.brand--beach') !== null;
+
   const block = WebImporter.Blocks.createBlock(document, {
-    name: 'columns-promo',
+    name: isBrand ? 'columns-promo (brand)' : 'columns-promo',
     cells,
   });
   element.replaceWith(block);
