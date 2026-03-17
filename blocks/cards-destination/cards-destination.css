@@ -7,13 +7,13 @@
   gap: 24px;
 }
 
-@media (width >= 600px) {
+@media (width >= 768px) {
   .cards-destination > ul {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (width >= 900px) {
+@media (width >= 992px) {
   .cards-destination > ul {
     grid-template-columns: repeat(3, 1fr);
     gap: 32px;
@@ -28,22 +28,43 @@
 }
 
 .cards-destination .cards-destination-card-body {
-  padding: var(--card-padding);
+  padding: 24px 24px 16px;
 }
 
 .cards-destination .cards-destination-card-body h3 {
-  margin-top: 0;
-  font-size: var(--heading-font-size-l);
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
 }
 
 .cards-destination .cards-destination-card-body h3 a {
   color: var(--text-color);
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .cards-destination .cards-destination-card-body h3 a:hover {
   color: var(--link-color);
-  text-decoration: underline;
+}
+
+.cards-destination .cards-destination-card-body .cards-destination-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--body-font-size-s);
+  font-weight: 600;
+  color: var(--text-secondary-color);
+  padding: 12px 0;
+  margin: 0;
+}
+
+.cards-destination .cards-destination-card-body .cards-destination-location svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 2;
 }
 
 .cards-destination .cards-destination-card-body p {
@@ -55,7 +76,7 @@
 .cards-destination .cards-destination-card-body ul {
   list-style: none;
   padding: 0;
-  margin: 0.5em 0 0;
+  margin: 0;
 }
 
 .cards-destination .cards-destination-card-body ul li {

@@ -143,6 +143,11 @@
   --content-max-width: 1200px;
   --content-padding: 24px;
   --nav-height: 64px;
+
+  /* --- Breakpoints ---
+     Tablet:  768px  (cards 2-col, tablet layouts)
+     Desktop: 992px  (nav horizontal, multi-column, heading sizes)
+  */
 }
 
 /* fallback fonts */
@@ -164,7 +169,7 @@
   src: local('Arial Narrow'), local('Arial');
 }
 
-@media (width >= 900px) {
+@media (width >= 992px) {
   :root {
     --heading-font-size-xxl: 36px;
     --heading-font-size-xl: 30px;
@@ -490,7 +495,7 @@ main > .section:first-of-type {
   margin-top: 0;
 }
 
-@media (width >= 900px) {
+@media (width >= 992px) {
   main > .section > div {
     padding: 0 var(--content-padding);
   }

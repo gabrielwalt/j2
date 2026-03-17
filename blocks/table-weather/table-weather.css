@@ -1,14 +1,16 @@
+/* table-weather: bar-chart style horizontal scroll cards */
 .table-weather {
   width: 100%;
 }
 
 .table-weather-scroll {
   display: flex;
-  gap: 24px;
+  gap: 12px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 8px;
+  align-items: flex-end;
 }
 
 .table-weather-scroll::-webkit-scrollbar {
@@ -21,31 +23,45 @@
 }
 
 .table-weather-card {
-  flex: 0 0 auto;
-  min-width: 80px;
-  width: 80px;
+  flex: 0 0 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
   scroll-snap-align: start;
+  width: 100px;
 }
 
-@media (width >= 900px) {
-  .table-weather-card {
-    min-width: 100px;
-    width: 100px;
-  }
+.table-weather-bar {
+  width: 100%;
+  background-color: #f8f9fc;
+  border-radius: 6px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  padding: 0;
+}
+
+.table-weather-icon {
+  display: flex;
+  color: #fdb900;
+}
+
+.table-weather-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .table-weather-temp {
-  font-size: var(--body-font-size-m);
+  font-size: var(--body-font-size-s);
   font-weight: 600;
   color: var(--text-color);
+  margin-top: 4px;
 }
 
 .table-weather-month {
-  font-size: var(--body-font-size-m);
-  font-weight: 600;
+  font-size: var(--body-font-size-s);
+  font-weight: 400;
   color: var(--text-color);
+  margin-top: 8px;
+  text-align: center;
 }

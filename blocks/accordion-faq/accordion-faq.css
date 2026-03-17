@@ -1,12 +1,7 @@
+/* accordion-faq: simple list with bottom borders (matches Jet2 original) */
 .accordion-faq details {
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-/* stylelint-disable-next-line no-descending-specificity */
-.accordion-faq details + details {
-  margin-top: 16px;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .accordion-faq details p {
@@ -14,19 +9,18 @@
 }
 
 .accordion-faq details summary {
-  position: relative;
-  padding: 16px 46px 16px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 48px;
+  padding: 12px 0;
   cursor: pointer;
   list-style: none;
-  overflow: auto;
-  transition: background-color var(--transition-base);
-  font-weight: 600;
-  font-size: var(--body-font-size-m);
+  transition: color var(--transition-base);
+  font-weight: 400;
+  font-size: var(--body-font-size-s);
   color: var(--text-color);
-}
-
-.accordion-faq details[open] summary {
-  background-color: var(--light-color);
 }
 
 .accordion-faq details summary:focus-visible {
@@ -35,7 +29,7 @@
 }
 
 .accordion-faq details summary:hover {
-  background-color: var(--light-color);
+  color: var(--link-color);
 }
 
 .accordion-faq details summary::-webkit-details-marker {
@@ -44,32 +38,25 @@
 
 .accordion-faq details summary::after {
   content: '';
-  position: absolute;
-  top: 50%;
-  right: 18px;
-  transform: translateY(-50%) rotate(135deg);
-  width: 8px;
-  height: 8px;
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
   border: 2px solid var(--text-secondary-color);
-  border-width: 2px 2px 0 0;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
   transition: transform var(--transition-base);
 }
 
 .accordion-faq details[open] summary::after {
-  transform: translateY(-50%) rotate(-45deg);
+  transform: rotate(-135deg);
 }
 
 .accordion-faq details .accordion-faq-item-body {
-  padding: 0 16px 16px;
+  padding: 0 0 16px;
 }
 
 .accordion-faq details .accordion-faq-item-body p {
   color: var(--text-secondary-color);
   font-size: var(--body-font-size-s);
   line-height: 1.5;
-}
-
-.accordion-faq details[open] .accordion-faq-item-body {
-  border-top: 1px solid var(--border-color);
-  background-color: var(--background-color);
 }
