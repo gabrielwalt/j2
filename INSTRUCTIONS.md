@@ -38,12 +38,9 @@
 10. **NEVER commit or push to Git yourself** — The user handles all Git operations.
 11. **Code must be compatible with DA markup** — DA wraps inline content in `<p>` tags. Block JS and CSS must handle this with flexible selectors.
 12. **`.plain.html` is the single source of truth** — All content edits go to `.plain.html` files in `/content/`. No `.html` or `.md` files in the content folder.
-13. **Keep `/sitemap.json` up-to-date at all times** — Update the sitemap whenever pages are discovered, imported, re-imported, refactored, validated, or approved. See "Sitemap Maintenance" section.
-14. **Keep sitemap blocks[] current after every content change** — After import scripts, re-imports, or content changes, immediately update the affected page's `blocks[]` and `sectionStyles[]` in `/sitemap.json`.
-15. **NEVER allow `.html` (non-`.plain.html`) or `.md` files in the content area** — The `/content/` directory must ONLY contain `.plain.html` files.
-16. **Parser-first content workflow** — Content changes MUST go through the import pipeline: update parsers → re-bundle → re-import. Direct `.plain.html` edits are a LAST RESORT.
-17. **Check sitemap before modifying ANY parser** — Before changing a parser, query `/sitemap.json` to identify ALL pages that use the affected block. Flag validated/approved pages to the user before proceeding.
-18. **Always update sitemap blocks[] and sectionStyles[] after EVERY import** — This is mandatory, not optional.
+13. **NEVER allow `.html` (non-`.plain.html`) or `.md` files in the content area** — The `/content/` directory must ONLY contain `.plain.html` files.
+14. **Parser-first content workflow** — Content changes MUST go through the import pipeline: update parsers → re-bundle → re-import. Direct `.plain.html` edits are a LAST RESORT.
+15. **Check `PAGES.txt` before modifying ANY parser** — Review `/PAGES.txt` to understand which pages may be affected. Flag concerns to the user before proceeding.
 
 ---
 
@@ -123,86 +120,6 @@ DA wraps inline content in `<p>` tags. Block CSS/JS must use flexible selectors 
 
 ---
 
-## Sitemap Maintenance (`/sitemap.json`)
-
-**`/sitemap.json` is the master tracker for the entire migration.** The agent MUST create and maintain it systematically.
-
-### When to Update sitemap.json
-
-| Event | Required Update |
-|-------|-----------------|
-| **New page discovered on original site** | Add entry to `pages[]` with `sourceUrl`, `imported: false` |
-| **Page imported (content created)** | Set `imported: true`, populate `blocks[]` and `sectionStyles[]` — **MANDATORY** |
-| **Import re-run on existing page** | Update `blocks[]` and `sectionStyles[]` to match new content |
-| **Import validated** | Set `importValidated: true` |
-| **Page critiqued/approved** | Set `critiqued: true` / `approved: true` |
-| **Content refactored** | Update `blocks[]` and `sectionStyles[]` |
-| **Page removed** | Remove the entry from `pages[]` |
-| **New fragment created** | Add entry to `fragments[]` |
-| **Parser modified** | Check ALL pages using that block; reset `importValidated` on affected pages if content may have changed |
-
-### Sitemap Structure
-
-```json
-{
-  "$schema": "sitemap",
-  "$version": "1.0.0",
-  "$description": "...",
-  "fragments": [
-    { "path": "/nav", "imported": false, "importValidated": false, "critiqued": false, "approved": false }
-  ],
-  "pages": []
-}
-```
-
-### Page Entry Template
-
-```json
-{
-  "path": "/path/to/page",
-  "sourceUrl": "https://example.com/path/to/page.html",
-  "imported": false,
-  "importValidated": false,
-  "critiqued": false,
-  "approved": false,
-  "blocks": [],
-  "sectionStyles": []
-}
-```
-
-### Sitemap Rules
-
-1. **Create `/sitemap.json` at project start** — Before or during the first page migration.
-2. **Discover pages systematically** — When scraping or analyzing the source site, add every discovered page to `pages[]` with `imported: false`.
-3. **Paths use no extension** — e.g., `/us/en/home`, not `/us/en/home.html`
-4. **Source URLs** — Always include the full original site URL
-5. **blocks[] and sectionStyles[]** — Simple string arrays. Every imported page MUST have these populated.
-6. **Use blocks[] for impact analysis** — Before modifying a parser or block, query the sitemap to find ALL pages using that block. Warn the user if validated/approved pages are affected.
-
-### Systematic Sitemap Construction
-
-1. **Initial creation** — Create `/sitemap.json` with the structure above. Initialize `fragments[]` with `/nav` and `/footer`. Initialize `pages[]` as empty.
-
-2. **Page discovery** — When the user provides a source URL or when scraping/analyzing the site:
-   - Extract all navigable page URLs from the source
-   - For each URL, derive the target path (e.g., `https://example.com/about/us` → `/about/us`)
-   - Add each as a page entry with `imported: false`, `blocks: []`, `sectionStyles: []`
-
-3. **After each migration** — When a page is migrated:
-   - Set `imported: true`
-   - Parse the generated `.plain.html` to extract block class names and section-metadata styles
-   - Populate `blocks[]` and `sectionStyles[]`
-
-4. **Path derivation** — Map source URL to content path consistently:
-   - Strip domain and protocol
-   - Remove `.html` extension
-   - Preserve locale segments if present
-   - Use lowercase, hyphenated paths
-
-5. **Bulk import** — Update the sitemap for every page in the batch. Do not defer updates.
-
----
-
 ## CSS Guidelines
 
 1. **Never use `!important`** — Increase selector specificity instead
@@ -252,7 +169,7 @@ DA wraps inline content in `<p>` tags. Block CSS/JS must use flexible selectors 
 - **Navigation**: Fragment at `/content/nav.plain.html`
 - **Footer**: Fragment at `/content/footer.plain.html`
 - **Import infrastructure**: `/tools/importer/`
-- **Sitemap**: `/sitemap.json` — **Must be kept up-to-date at all times**
+- **Page inventory**: `/PAGES.txt` — List of all imported content pages
 
 ---
 
@@ -265,6 +182,5 @@ DA wraps inline content in `<p>` tags. Block CSS/JS must use flexible selectors 
 5. Fragment files (nav, footer) must NOT have `<header>` or `<footer>` tags
 6. Merge similar blocks into single multi-row blocks — don't create separate blocks per row
 7. Parser-first workflow — update parsers, re-bundle, re-import. Direct `.plain.html` edits are last resort.
-8. Check sitemap before modifying parsers
-9. Update sitemap after EVERY import without exception
-10. Start new sessions by reading this file and `PROJECT.md`
+8. Check `PAGES.txt` before modifying parsers to understand impact
+9. Start new sessions by reading this file and `PROJECT.md`

@@ -3,7 +3,7 @@
 **Source site**: https://www.jet2holidays.com/
 **Content path prefix**: `/destinations/`
 **Content directory**: `/content/`
-**Sitemap tracker**: `/sitemap.json`
+**Page inventory**: `/PAGES.txt`
 
 ---
 
@@ -457,34 +457,9 @@ npx esbuild tools/importer/import-universal.js --bundle --format=iife --global-n
 
 ## Migration Status
 
-### Sitemap Summary (from `/sitemap.json`)
+### Imported Pages
 
-| Metric | Count |
-|--------|-------|
-| Pages imported | 1 |
-| Pages validated | 0 |
-| Pages critiqued | 0 |
-| Pages approved | 0 |
-| Fragments (nav/footer) | 0 of 2 |
-
-### Imported Page
-
-- `/destinations/portugal/algarve` — blocks: columns-destination, destination-map, cards-destination, table-weather, accordion-faq. Styles: grey.
-
-### Content Files (10)
-
-```
-content/destinations/portugal/algarve.plain.html
-content/destinations/portugal/algarve/albufeira.plain.html
-content/destinations/portugal/algarve/alvor.plain.html
-content/destinations/portugal/algarve/carvoeiro.plain.html
-content/destinations/portugal/algarve/ferragudo.plain.html
-content/destinations/portugal/algarve/lagos.plain.html
-content/destinations/portugal/algarve/vilamoura.plain.html
-content/destinations/portugal/madeira.plain.html
-content/destinations/portugal/madeira/funchal.plain.html
-content/destinations/bulgaria/bourgas-area.plain.html
-```
+All imported pages are listed in `/PAGES.txt` (942 content files). Each line is a path relative to the project root, e.g. `content/destinations/portugal/algarve.plain.html`.
 
 ---
 
