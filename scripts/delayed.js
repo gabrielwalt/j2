@@ -25,7 +25,6 @@ async function disableUnimportedLinks() {
 
         a.style.cursor = 'not-allowed';
         a.title = 'Content not imported yet';
-        a.style.opacity = '0.5';
         a.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
