@@ -225,7 +225,11 @@ h6 {
 }
 
 h1 { font-size: var(--heading-font-size-xxl); }
-h2 { font-size: var(--heading-font-size-xl); }
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
 h3 { font-size: var(--heading-font-size-l); }
 h4 { font-size: var(--heading-font-size-m); }
 h5 { font-size: var(--heading-font-size-s); }
@@ -243,8 +247,12 @@ blockquote {
 
 p {
   color: var(--text-secondary-color);
-  font-size: var(--body-font-size-m);
+  font-size: var(--body-font-size-s);
   line-height: 1.5;
+}
+
+.default-content-wrapper p {
+  margin-bottom: 32px;
 }
 
 code,
@@ -273,7 +281,7 @@ button {
 
 /* links */
 a:any-link {
-  color: var(--link-color);
+  color: var(--text-secondary-color);
   text-decoration: none;
   overflow-wrap: break-word;
   transition: color var(--transition-base);
@@ -291,6 +299,7 @@ a:active {
 /* buttons */
 p.button-wrapper {
   margin: 12px 0;
+  text-align: center;
 }
 
 /* base button shape + primary colors (Jet2 blue is default) */

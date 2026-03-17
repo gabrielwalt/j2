@@ -19,15 +19,16 @@ export default function decorate(block) {
     img.closest('picture').replaceWith(optimizedPic);
   });
 
-  // Add pin icon to the first paragraph (location) in each card body
+  // Add pin icon to location paragraph when followed by more content (another p or a list)
   ul.querySelectorAll('.cards-destination-card-body').forEach((body) => {
     const h3 = body.querySelector('h3');
     if (!h3) return;
     const loc = h3.nextElementSibling;
-    if (loc && loc.tagName === 'P') {
-      loc.classList.add('cards-destination-location');
-      loc.insertAdjacentHTML('afterbegin', PIN_SVG);
-    }
+    if (!loc || loc.tagName !== 'P') return;
+    const after = loc.nextElementSibling;
+    if (!after || (after.tagName !== 'P' && after.tagName !== 'UL')) return;
+    loc.classList.add('cards-destination-location');
+    loc.insertAdjacentHTML('afterbegin', PIN_SVG);
   });
 
   block.textContent = '';

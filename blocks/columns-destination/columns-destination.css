@@ -21,6 +21,25 @@
   border-radius: 8px;
 }
 
+/* Border card on desktop */
+@media (width >= 992px) {
+  .columns-destination.columns-destination-2-cols > div {
+    border: var(--card-border);
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+  }
+
+  .columns-destination.columns-destination-2-cols > div > div:not(.columns-destination-img-col) {
+    border: none;
+  }
+
+  .columns-destination.columns-destination-2-cols > div > .columns-destination-img-col img {
+    border-radius: 0;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
 .columns-destination h2 {
   font-size: 24px;
   line-height: 32px;
@@ -29,13 +48,16 @@
 
 .columns-destination .columns-destination-text p {
   margin: 0 0 16px;
+  font-size: var(--body-font-size-m);
+  line-height: 24px;
+  color: var(--text-secondary-color);
 }
 
 @media (width >= 992px) {
   .columns-destination > div {
-    align-items: flex-start;
+    align-items: stretch;
     flex-direction: unset;
-    gap: 32px;
+    gap: 0;
   }
 
   .columns-destination > div > div {
@@ -107,16 +129,18 @@
   height: 24px;
 }
 
-/* Text column spacing (title offset from image top) */
-.columns-destination > div > div:not(.columns-destination-img-col) {
-  padding-top: 16px;
+/* Text column spacing */
+.columns-destination.columns-destination-2-cols > div > div:not(.columns-destination-img-col) {
+  padding: 16px 0 0;
 }
 
 @media (width >= 992px) {
-  .columns-destination > div > div:not(.columns-destination-img-col) {
-    padding-top: 40px;
+  .columns-destination.columns-destination-2-cols > div > div:not(.columns-destination-img-col) {
+    padding: 32px;
   }
+}
 
+@media (width >= 992px) {
   .columns-destination h2 {
     margin: 0 0 24px;
   }
@@ -148,4 +172,34 @@
 .columns-destination .columns-destination-toggle[aria-expanded]:hover,
 .columns-destination .columns-destination-toggle[aria-expanded="true"] {
   text-decoration-line: underline;
+}
+
+/* Signup variant — email input */
+.columns-destination .columns-destination-email-field {
+  margin-bottom: 16px;
+}
+
+.columns-destination .columns-destination-email-field label {
+  display: block;
+  font-size: var(--body-font-size-s);
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+.columns-destination .columns-destination-email-field input {
+  width: 100%;
+}
+
+/* Signup variant — left-aligned button */
+.columns-destination .button-wrapper {
+  text-align: left;
+}
+
+/* Signup variant — disclaimer */
+.columns-destination .columns-destination-disclaimer {
+  font-size: var(--body-font-size-xs);
+  color: var(--text-secondary-color);
+  margin: 12px 0 0;
+  line-height: 1.5;
 }

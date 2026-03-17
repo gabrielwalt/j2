@@ -83,6 +83,29 @@ function addReadMore(textCol) {
   });
 }
 
+function decorateSignup(col) {
+  const buttonWrapper = col.querySelector('.button-wrapper');
+  if (!buttonWrapper) return;
+
+  // Find the disclaimer paragraph (any p that isn't the button wrapper)
+  const disclaimer = [...col.querySelectorAll('p:not(.button-wrapper)')].find(
+    (p) => p.textContent.includes('submitting this form'),
+  );
+
+  // Add email field before the button
+  const field = document.createElement('div');
+  field.className = 'columns-destination-email-field';
+  field.innerHTML = '<label for="signup-email">Email address (required)</label>'
+    + '<input type="email" id="signup-email" required>';
+  buttonWrapper.before(field);
+
+  // Move disclaimer after button and restyle
+  if (disclaimer) {
+    disclaimer.classList.add('columns-destination-disclaimer');
+    buttonWrapper.after(disclaimer);
+  }
+}
+
 export default function decorate(block) {
   const cols = [...block.firstElementChild.children];
   block.classList.add(`columns-destination-${cols.length}-cols`);
@@ -94,11 +117,16 @@ export default function decorate(block) {
       if (pic) {
         const picWrapper = pic.closest('div');
         if (picWrapper && picWrapper.children.length === 1) {
-          // picture is only content in column
           picWrapper.classList.add('columns-destination-img-col');
         }
       } else if (cols.length > 1) {
-        addReadMore(col);
+        // Signup variant: has a button-wrapper with "Sign up"
+        const signupBtn = col.querySelector('.button-wrapper a[title="Sign up"]');
+        if (signupBtn) {
+          decorateSignup(col);
+        } else {
+          addReadMore(col);
+        }
       }
     });
   });
