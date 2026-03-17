@@ -1,0 +1,124 @@
+/* columns-promo: full-width promo banner (image + heading + text + CTA) */
+.columns-promo {
+  background-color: #f2f2f2;
+}
+
+.columns-promo > div {
+  display: flex;
+  flex-direction: column;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+.columns-promo > div > div {
+  order: 1;
+}
+
+.columns-promo > div > .columns-promo-img-col {
+  order: 0;
+}
+
+.columns-promo img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+/* Text column */
+.columns-promo > div > div:not(.columns-promo-img-col) {
+  padding: 24px;
+}
+
+.columns-promo h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #444;
+  margin: 0 0 12px;
+}
+
+.columns-promo p {
+  font-size: 16px;
+  color: #444;
+  line-height: 1.44;
+  margin: 0 0 16px;
+}
+
+/* CTA as yellow accent button */
+.columns-promo .button-wrapper {
+  margin: 16px 0 0;
+}
+
+.columns-promo a.button:any-link {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #203240;
+  font-size: 20px;
+  font-weight: 400;
+  padding: 16px 12px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.columns-promo a.button:hover {
+  background-color: var(--accent-hover-color);
+  border-color: var(--accent-hover-color);
+}
+
+/* Brand variant — blue background with white text (e.g. Sicily promo) */
+.columns-promo.brand {
+  background-color: #2b6fb1;
+}
+
+.columns-promo.brand h2 {
+  color: #fff;
+}
+
+.columns-promo.brand p {
+  color: #fff;
+}
+
+.columns-promo.brand a.button:any-link {
+  color: #fff;
+}
+
+/* Edge-to-edge layout overrides */
+main .columns-promo-container {
+  max-width: unset;
+  margin: 0;
+  padding: 0;
+}
+
+.columns-promo-container .columns-promo-wrapper {
+  max-width: unset;
+  padding: 0;
+}
+
+@media (width >= 992px) {
+  .columns-promo > div {
+    flex-direction: row-reverse;
+    align-items: center;
+    padding: 24px 48px;
+    gap: 0;
+  }
+
+  .columns-promo > div > div {
+    flex: 1;
+    order: unset;
+  }
+
+  .columns-promo > div > .columns-promo-img-col {
+    max-width: 50%;
+  }
+
+  .columns-promo > div > div:not(.columns-promo-img-col) {
+    padding: 24px 48px 24px 0;
+  }
+
+  .columns-promo a.button:any-link {
+    width: auto;
+  }
+}

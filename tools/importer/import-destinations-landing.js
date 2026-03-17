@@ -54,10 +54,16 @@ export default {
   transform: (payload) => {
     const { document, url, html, params } = payload;
 
-    // This landing page wraps content in .outer > .site-content.
-    // Replace document.body content with just .site-content to strip all header/footer chrome.
+    // The page content lives inside .site-content > section.
+    // Use the <section> as the content root to strip all surrounding chrome.
     const siteContent = document.querySelector('.site-content');
-    if (siteContent) {
+    const contentSection = siteContent
+      ? siteContent.querySelector('section')
+      : null;
+    if (contentSection) {
+      document.body.innerHTML = '';
+      document.body.appendChild(contentSection);
+    } else if (siteContent) {
       document.body.innerHTML = '';
       document.body.appendChild(siteContent);
     }
@@ -70,10 +76,36 @@ export default {
       console.error('Cleanup beforeTransform failed:', e);
     }
 
-    // 2. Landing-page-specific cleanup: remove unwanted content
+    // 2. Aggressive chrome removal — strip ALL non-content elements
+    WebImporter.DOMUtils.remove(main, [
+      // Headers & navigation
+      'header', 'nav', '.header-v2', '.header-mobile-v2',
+      '.nav-bar-mobile', '.close-menu-overlay',
+      // Footers
+      'footer', '.footer-v2', '.footer-links', '.back-to-top',
+      // Search UI
+      '.search-nav-input', '.edit-search', '.search-box',
+      '[class*="search-box-wrapper"]', '#search-bar-section',
+      '.search-bar-v2', '.search-bar-v2-wrapper',
+      // Shortlists / dealfinder / modals
+      '[class*="shortlists"]', '.dealfinder-container',
+      '.modal', '.overlay',
+      // Destination tabs & footer links
+      '.dest-tabs',
+      // Email signup
+      '.email-signup', '[class*="email-signup"]', '.js-email-signup-form-content',
+      // Breadcrumbs
+      '#breadcrumbs-section', '[class*="breadcrumbs"]',
+      // Contact / chat
+      '[class*="contact-bar"]', '[class*="chat-widget"]',
+      // Misc chrome
+      '.fragment', '.banner-message',
+      'input', 'iframe', 'link', 'noscript', 'script', 'style',
+    ]);
+
+    // 3. Landing-page-specific cleanup: remove unwanted media blocks
     // Remove myJet2 media-block (the one with empty heading / "Get more with a free myJet2 account!")
     main.querySelectorAll('.media-block-table, .media-block--reverse').forEach((el) => {
-      // The myJet2 block uses .media-block--reverse or is wrapped in .media-block-table
       el.remove();
     });
 
@@ -81,9 +113,7 @@ export default {
     main.querySelectorAll('.media-block').forEach((mb) => {
       const heading = mb.querySelector('.media-block__heading, h2');
       const text = heading?.textContent?.trim() || '';
-      // Empty heading = myJet2 block, also catch any with "myJet2" text
       if (!text || /myjet2/i.test(mb.textContent)) {
-        // Only remove if this looks like the signup block (has login link or empty heading)
         const loginLink = mb.querySelector('a[href*="login"], a[href*="myjet2"]');
         if (!text || loginLink) {
           mb.remove();
@@ -94,8 +124,7 @@ export default {
     // Remove "Recently viewed" section
     main.querySelectorAll('.section-recent-hotel').forEach((el) => el.remove());
 
-    // 3. Content cutoff: remove everything after "Discover a different side of Sicily" media-block
-    // Find the Sicily media-block
+    // 4. Content cutoff: remove everything after "Discover a different side of Sicily" media-block
     let sicilyBlock = null;
     main.querySelectorAll('.media-block').forEach((mb) => {
       const heading = mb.querySelector('.media-block__heading, h2');
@@ -105,7 +134,6 @@ export default {
     });
 
     if (sicilyBlock) {
-      // The Sicily media-block might be nested in a .padding--bottom wrapper
       const cutoffContainer = sicilyBlock.closest('.padding--bottom') || sicilyBlock.parentElement;
 
       // Remove all siblings after the Sicily block's container
@@ -125,16 +153,6 @@ export default {
       }
     }
 
-    // 4. Remove global chrome (header, footer, breadcrumbs, search, etc.)
-    WebImporter.DOMUtils.remove(main, [
-      'header', '.header-v2',
-      'footer', '.footer-v2',
-      '#breadcrumbs-section', '[class*="breadcrumbs"]',
-      '#search-bar-section', '.search-bar-v2', '.search-bar-v2-wrapper',
-      '.fragment',
-      'iframe', 'link', 'noscript', 'script', 'style',
-    ]);
-
     // 5. Build content in document order by walking the cleaned DOM
 
     // Section 1: Hero banner + intro text
@@ -147,8 +165,9 @@ export default {
       // Replace banner with clean image + h1
       const frag = document.createDocumentFragment();
       if (img) {
+        const src = img.dataset?.src || img.src || '';
         const newImg = document.createElement('img');
-        newImg.src = img.src || '';
+        newImg.src = src;
         newImg.alt = h1?.textContent?.trim() || '';
         const p = document.createElement('p');
         p.append(newImg);
@@ -278,7 +297,7 @@ export default {
       }
     });
 
-    // 13. Remove tracking pixels
+    // 13. Remove tracking pixels, SVG placeholders, and broken images
     main.querySelectorAll('img').forEach((img) => {
       const src = img.getAttribute('src') || '';
       if (
@@ -288,6 +307,8 @@ export default {
         || src.includes('setuid?')
         || src.includes('facebook.com/tr')
         || (src.includes('action/0?') && src.includes('ti='))
+        || src.startsWith('data:image/svg')
+        || src === ''
       ) {
         const parent = img.closest('p');
         if (parent && parent.children.length <= 1 && !parent.textContent.trim()) {

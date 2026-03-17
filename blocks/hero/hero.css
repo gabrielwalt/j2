@@ -1,3 +1,4 @@
+/* hero: full-width image banner with title overlay + optional intro band */
 .hero-container .hero-wrapper {
   max-width: unset;
   padding: 0;
@@ -5,23 +6,15 @@
 
 .hero {
   position: relative;
-  padding: 40px 24px;
-  min-height: 300px;
+  overflow: hidden;
+  background-color: var(--color-brand-holidays);
 }
 
-.hero h1 {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  color: var(--background-color);
-}
-
+/* Background image fills the entire block (above fallback bg, below text) */
 .hero picture {
   position: absolute;
-  z-index: -1;
+  z-index: 0;
   inset: 0;
-  object-fit: cover;
-  box-sizing: border-box;
 }
 
 .hero img {
@@ -30,8 +23,69 @@
   height: 100%;
 }
 
+/* h1 overlay — defines the visible banner area */
+.hero > div:nth-child(2) {
+  position: relative;
+  z-index: 1;
+  min-height: 200px;
+  padding: 48px 24px 0;
+}
+
+/* White gradient fade at the bottom of the banner */
+.hero > div:nth-child(2)::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 70%;
+  background-image: linear-gradient(rgb(255 255 255 / 0%), rgb(255 255 255));
+  pointer-events: none;
+}
+
+.hero h1 {
+  position: relative;
+  z-index: 1;
+  max-width: var(--content-max-width);
+  margin: 0;
+  font-family: var(--display-font-family);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--background-color);
+  text-transform: uppercase;
+  letter-spacing: -0.14px;
+}
+
+/* Intro band (h2 + p) below the image — light-blue background */
+.hero > div:last-child {
+  position: relative;
+  z-index: 1;
+  background-color: #ddeefb;
+  padding: 24px;
+  text-align: center;
+}
+
+.hero > div:last-child h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 8px;
+}
+
+.hero > div:last-child p {
+  font-size: 14px;
+  line-height: 1.44;
+  color: var(--text-color);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 @media (width >= 992px) {
-  .hero {
-    padding: 40px 32px;
+  .hero > div:nth-child(2) {
+    min-height: 305px;
+    padding: 48px 24px 0;
+  }
+
+  .hero h1 {
+    font-size: 54px;
   }
 }

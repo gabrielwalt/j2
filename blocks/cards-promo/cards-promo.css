@@ -1,0 +1,70 @@
+/* cards-promo: horizontal promo card grid for destination landing page */
+
+/* Section heading above card grid */
+.cards-promo-container > .default-content-wrapper > h2 {
+  font-size: 30px;
+  font-weight: 600;
+  color: #444;
+  margin: 0;
+  padding: 0 0 24px;
+  line-height: 1.44;
+}
+
+.cards-promo > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (width >= 768px) {
+  .cards-promo > ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (width >= 992px) {
+  .cards-promo > ul {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.cards-promo > ul > li {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cards-promo .cards-promo-card-image {
+  line-height: 0;
+}
+
+.cards-promo > ul > li img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.cards-promo .cards-promo-card-body {
+  padding: 0;
+  text-align: center;
+}
+
+.cards-promo .cards-promo-card-body h3 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.cards-promo .cards-promo-card-body h3 a {
+  color: #444;
+  text-decoration: none;
+}
+
+.cards-promo .cards-promo-card-body h3 a:hover {
+  color: var(--link-color);
+  text-decoration: underline;
+}
