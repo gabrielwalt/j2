@@ -1,19 +1,24 @@
-.hlx/*
-coverage/*
-logs/*
-node_modules/*
-
-helix-importer-ui
+# OS / IDE / Editor
 .DS_Store
-*.bak
 .idea
-*.html
+*.bak
+
+# Dependencies / Build
+node_modules/
+coverage/
+logs/
+.hlx/
+
+# Generated
+helix-importer-ui
+.migration/project.json
 tools/importer/*.bundle.js
 tools/importer/urls-*.txt
 tools/importer/reports/
+*.html
 
-# Ensure these files are tracked
+# Force-track (override above)
 !CLAUDE.md
-!PROJECT.md
 !INSTRUCTIONS.md
+!PROJECT.md
 !PAGES.txt
