@@ -1,0 +1,10 @@
+{
+  "blockName": "hero",
+  "sourceContext": {
+    "originUrl": "https://www.jet2holidays.com/destinations",
+    "sourceSelectors": [".image-banner", ".title-and-text"]
+  },
+  "usage": {
+    "pagesUsing": ["/destinations"]
+  }
+}

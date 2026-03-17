@@ -155,49 +155,47 @@ export default {
 
     // 5. Build content in document order by walking the cleaned DOM
 
-    // Section 1: Hero banner + intro text
-    // Extract hero image and h1
+    // Section 1: Hero block from .image-banner + .title-and-text
+    // Row 1 = image, Row 2 = h1, Row 3 = h2 + intro paragraph
     const banner = main.querySelector('.image-banner');
+    const titleAndText = main.querySelector('.title-and-text');
     if (banner) {
       const img = banner.querySelector('img');
       const h1 = banner.querySelector('h1');
-
-      // Replace banner with clean image + h1
-      const frag = document.createDocumentFragment();
+      const cells = [];
       if (img) {
         const src = img.dataset?.src || img.src || '';
         const newImg = document.createElement('img');
         newImg.src = src;
         newImg.alt = h1?.textContent?.trim() || '';
-        const p = document.createElement('p');
-        p.append(newImg);
-        frag.append(p);
+        cells.push([[newImg]]);
       }
       if (h1) {
         const newH1 = document.createElement('h1');
         newH1.textContent = h1.textContent.trim();
-        frag.append(newH1);
+        cells.push([[newH1]]);
       }
-      banner.replaceWith(frag);
-    }
-
-    // Extract title-and-text as default content (h2 + p)
-    const titleAndText = main.querySelector('.title-and-text');
-    if (titleAndText) {
-      const h2 = titleAndText.querySelector('h2');
-      const p = titleAndText.querySelector('p');
-      const frag = document.createDocumentFragment();
-      if (h2) {
-        const newH2 = document.createElement('h2');
-        newH2.textContent = h2.textContent.trim();
-        frag.append(newH2);
+      if (titleAndText) {
+        const h2 = titleAndText.querySelector('h2');
+        const p = titleAndText.querySelector('p');
+        const introContent = [];
+        if (h2) {
+          const newH2 = document.createElement('h2');
+          newH2.textContent = h2.textContent.trim();
+          introContent.push(newH2);
+        }
+        if (p) {
+          const newP = document.createElement('p');
+          newP.textContent = p.textContent.trim();
+          introContent.push(newP);
+        }
+        if (introContent.length > 0) {
+          cells.push([introContent]);
+        }
+        titleAndText.remove();
       }
-      if (p) {
-        const newP = document.createElement('p');
-        newP.textContent = p.textContent.trim();
-        frag.append(newP);
-      }
-      titleAndText.replaceWith(frag);
+      const heroBlock = WebImporter.Blocks.createBlock(document, { name: 'hero', cells });
+      banner.replaceWith(heroBlock);
     }
 
     // 6. Extract section headings from .section > .wrapper > h2 elements

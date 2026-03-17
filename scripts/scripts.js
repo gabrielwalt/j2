@@ -25,6 +25,8 @@ function buildBreadcrumbsBlock(main) {
 
 /**
  * Builds hero block and prepends to main in a new section.
+ * Grabs picture + h1 and, when present, the immediately following h2 + p
+ * (hero subtitle and intro paragraph, e.g. on the destinations landing page).
  * @param {Element} main The container element
  */
 function buildHeroBlock(main) {
@@ -32,12 +34,21 @@ function buildHeroBlock(main) {
   const picture = main.querySelector('picture');
   // eslint-disable-next-line no-bitwise
   if (h1 && picture && (h1.compareDocumentPosition(picture) & Node.DOCUMENT_POSITION_PRECEDING)) {
-    // Check if h1 or picture is already inside a hero block
     if (h1.closest('.hero') || picture.closest('.hero')) {
-      return; // Don't create a duplicate hero block
+      return;
+    }
+    const elems = [picture, h1];
+    // Grab optional hero subtitle (h2) + intro paragraph (p) that immediately follow the h1
+    const nextAfterH1 = h1.nextElementSibling;
+    if (nextAfterH1 && nextAfterH1.tagName === 'H2') {
+      elems.push(nextAfterH1);
+      const nextAfterH2 = nextAfterH1.nextElementSibling;
+      if (nextAfterH2 && nextAfterH2.tagName === 'P' && !nextAfterH2.querySelector('picture')) {
+        elems.push(nextAfterH2);
+      }
     }
     const section = document.createElement('div');
-    section.append(buildBlock('hero', { elems: [picture, h1] }));
+    section.append(buildBlock('hero', { elems }));
     main.prepend(section);
   }
 }

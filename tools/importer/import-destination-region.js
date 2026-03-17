@@ -312,9 +312,8 @@ function transformLandingPage(payload) {
     '.fragment', 'iframe', 'link', 'noscript', 'script', 'style',
   ]);
 
-  // Extract hero banner + title-and-text as a single hero block.
-  // The brand-background intro (h2 + p) is part of the hero, shown
-  // below the image in a light-blue band.
+  // Hero block from .image-banner + .title-and-text
+  // Row 1 = image, Row 2 = h1, Row 3 = h2 + intro paragraph
   const banner = main.querySelector('.image-banner');
   const titleAndText = main.querySelector('.title-and-text');
   if (banner) {
@@ -332,7 +331,6 @@ function transformLandingPage(payload) {
       newH1.textContent = h1.textContent.trim();
       cells.push([[newH1]]);
     }
-    // Merge title-and-text content into the hero block
     if (titleAndText) {
       const h2 = titleAndText.querySelector('h2');
       const p = titleAndText.querySelector('p');
@@ -472,7 +470,7 @@ function transformLandingPage(payload) {
     report: {
       title: document.title,
       template: 'destinations-landing',
-      blocks: ['cards-promo', 'columns-promo'],
+      blocks: ['hero', 'cards-promo', 'columns-promo'],
     },
   }];
 }
