@@ -24,7 +24,7 @@ async function disableUnimportedLinks() {
         if (importedPaths.has(pathname)) return;
 
         a.style.cursor = 'not-allowed';
-        a.title = 'Content not imported yet';
+        a.dataset.tooltip = 'Content not imported yet';
         a.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();

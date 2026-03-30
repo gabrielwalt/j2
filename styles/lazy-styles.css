@@ -1,1 +1,29 @@
 /* add global styles that can be loaded post LCP here */
+
+/* Custom tooltip for unimported links */
+a[data-tooltip] {
+  position: relative;
+}
+
+a[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  background: var(--color-slate-dark, #252a31);
+  color: var(--color-white, #fff);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  border-radius: var(--radius-md, 6px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 100ms ease;
+}
+
+a[data-tooltip]:hover::after {
+  opacity: 1;
+}
