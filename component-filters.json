@@ -1,0 +1,22 @@
+[
+  {
+    "id": "section",
+    "components": [
+      "text",
+      "title",
+      "image",
+      "button",
+      "hero",
+      "accordion-faq",
+      "cards",
+      "cards-destination",
+      "cards-promo",
+      "columns",
+      "columns-destination",
+      "columns-promo",
+      "destination-map",
+      "table-weather",
+      "fragment"
+    ]
+  }
+]

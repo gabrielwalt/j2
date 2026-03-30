@@ -1,5 +1,10 @@
 {
-  "type": "da",
-  "libraryUrl": "https://main--sta-boilerplate--aemdemos.aem.page/tools/sidekick/library.json",
-  "contentHostUrl": "content.da.live"
+  "type": "xwalk",
+  "LibraryUrl": "https://main--j2-xwalk--gabrielwalt.aem.page/tools/sidekick/library.json",
+  "contentHostUrl": "https://author-p189820-e1977856.adobeaemcloud.com",
+  "aemSitePath": "/content/j2-xwalk",
+  "aemAssetsFolderPath": "/content/dam/j2-xwalk",
+  "aemSiteName": "j2-xwalk",
+  "aemSiteTitle": "J2 Xwalk",
+  "baseUrl": "https://www.j2-xwalk.nl/"
 }

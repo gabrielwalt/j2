@@ -1,0 +1,8 @@
+{
+  "/:path(**.html)": {
+    "source": "/content/j2-xwalk/:path"
+  },
+  "/:path*": {
+    "source": "/content/j2-xwalk/:path*"
+  }
+}
