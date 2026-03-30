@@ -21,10 +21,26 @@ export default function transform(hookName, element, payload) {
 
     // Activate lazy-loaded images: copy data-src → src, data-srcset → srcset
     // Jet2 uses a custom lazy loader that keeps real URLs in data-src/data-srcset
-    // and leaves src empty. Without this, images import as "about:error".
+    // and leaves src empty or absent. Without this, images import as "about:error".
     element.querySelectorAll('img[data-src]').forEach((img) => {
       const dataSrc = img.getAttribute('data-src');
-      if (dataSrc && (!img.getAttribute('src') || img.getAttribute('src') === '')) {
+      const currentSrc = img.getAttribute('src') || '';
+      if (dataSrc && (!currentSrc || currentSrc === 'about:error')) {
+        // Clean Scene7 URLs: strip Dynamic Media preset suffix (":PresetName")
+        // and add ?fmt=jpg for DA format detection — do this early so the browser
+        // caches the exact URL that adjustImageUrls will later request.
+        let cleanSrc = dataSrc;
+        if (cleanSrc.includes('media.jet2.com/is/image/')) {
+          try {
+            const u = new URL(cleanSrc);
+            u.pathname = u.pathname.replace(/:[\w-]+$/, '');
+            if (!u.searchParams.has('fmt')) u.searchParams.set('fmt', 'jpg');
+            cleanSrc = u.toString();
+          } catch { /* keep original */ }
+        }
+        img.setAttribute('src', cleanSrc);
+      } else if (currentSrc === 'about:error' && dataSrc) {
+        // Fix images that the browser marked as errored
         img.setAttribute('src', dataSrc);
       }
       img.removeAttribute('data-src');
@@ -33,6 +49,14 @@ export default function transform(hookName, element, payload) {
         img.setAttribute('srcset', dataSrcset);
       }
       if (dataSrcset) img.removeAttribute('data-srcset');
+    });
+
+    // Also fix any images that ended up as about:error (browser error state)
+    element.querySelectorAll('img').forEach((img) => {
+      const src = img.getAttribute('src') || '';
+      if (src === 'about:error') {
+        img.remove();
+      }
     });
 
     // Sanitize image URLs containing $Web$ or other Adobe Dynamic Media tokens

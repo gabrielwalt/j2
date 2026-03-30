@@ -18,11 +18,21 @@ export default function parse(element, { document }) {
   const col1 = [];
   const col2 = [];
 
-  // Image
+  // Image — prefer getAttribute over DOM property to avoid browser-resolved
+  // "about:error" from failed lazy loads. Also check data-src as fallback.
   const img = element.querySelector('.media-block__media img');
   if (img) {
-    const src = img.dataset?.src || img.src || '';
-    if (src) {
+    let src = img.getAttribute('data-src') || img.getAttribute('src') || '';
+    if (src && src !== 'about:error') {
+      // Clean Scene7 URLs: strip preset suffix, add ?fmt=jpg
+      if (src.includes('media.jet2.com/is/image/')) {
+        try {
+          const u = new URL(src);
+          u.pathname = u.pathname.replace(/:[\w-]+$/, '');
+          if (!u.searchParams.has('fmt')) u.searchParams.set('fmt', 'jpg');
+          src = u.toString();
+        } catch { /* keep original */ }
+      }
       const newImg = document.createElement('img');
       newImg.src = src;
       col1.push(newImg);

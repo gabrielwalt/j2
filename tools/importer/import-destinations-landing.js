@@ -164,11 +164,21 @@ export default {
       const h1 = banner.querySelector('h1');
       const cells = [];
       if (img) {
-        const src = img.dataset?.src || img.src || '';
-        const newImg = document.createElement('img');
-        newImg.src = src;
-        newImg.alt = h1?.textContent?.trim() || '';
-        cells.push([[newImg]]);
+        let src = img.getAttribute('data-src') || img.getAttribute('src') || '';
+        if (src && src !== 'about:error') {
+          if (src.includes('media.jet2.com/is/image/')) {
+            try {
+              const u = new URL(src);
+              u.pathname = u.pathname.replace(/:[\w-]+$/, '');
+              if (!u.searchParams.has('fmt')) u.searchParams.set('fmt', 'jpg');
+              src = u.toString();
+            } catch { /* keep original */ }
+          }
+          const newImg = document.createElement('img');
+          newImg.src = src;
+          newImg.alt = h1?.textContent?.trim() || '';
+          cells.push([[newImg]]);
+        }
       }
       if (h1) {
         const newH1 = document.createElement('h1');

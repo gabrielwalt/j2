@@ -112,11 +112,22 @@ async function fullPageScroll(page) {
     await page.waitForTimeout(5000);
 
     // Activate any remaining lazy images not triggered by scroll.
+    // Clean Scene7 URLs: strip preset suffix, add ?fmt=jpg so the browser
+    // caches the exact URL that the import transform will later request.
     const lazyCount = await page.evaluate(() => {
       let count = 0;
       document.querySelectorAll('img[data-src]').forEach((img) => {
-        const dataSrc = img.getAttribute('data-src');
+        let dataSrc = img.getAttribute('data-src');
         if (dataSrc && (!img.src || img.naturalWidth === 0)) {
+          // Clean Scene7 URLs before setting src
+          if (dataSrc.includes('media.jet2.com/is/image/')) {
+            try {
+              const u = new URL(dataSrc);
+              u.pathname = u.pathname.replace(/:[\w-]+$/, '');
+              if (!u.searchParams.has('fmt')) u.searchParams.set('fmt', 'jpg');
+              dataSrc = u.toString();
+            } catch { /* keep original */ }
+          }
           img.crossOrigin = 'anonymous';
           img.src = dataSrc;
           count++;
@@ -139,6 +150,24 @@ async function fullPageScroll(page) {
         }));
       });
       console.log('  All lazy images loaded.');
+    }
+
+    // Verify image state — log any that are still broken
+    const imgStatus = await page.evaluate(() => {
+      const results = { loaded: 0, failed: 0, failedUrls: [] };
+      document.querySelectorAll('img[data-src]').forEach((img) => {
+        if (img.naturalWidth > 0) {
+          results.loaded++;
+        } else {
+          results.failed++;
+          results.failedUrls.push(img.getAttribute('data-src') || img.getAttribute('src') || '(empty)');
+        }
+      });
+      return results;
+    });
+    console.log(`  Image status: ${imgStatus.loaded} loaded, ${imgStatus.failed} failed`);
+    if (imgStatus.failedUrls.length > 0) {
+      console.log(`  Failed URLs: ${imgStatus.failedUrls.join(', ')}`);
     }
 
     // Inject helix importer
