@@ -34,6 +34,17 @@
 .cards-promo > ul > li {
   border-radius: 10px;
   overflow: hidden;
+  transition: box-shadow var(--transition-base);
+}
+
+.cards-promo > ul > li:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.cards-promo .cards-promo-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .cards-promo .cards-promo-card-image {
@@ -59,12 +70,6 @@
   line-height: 1.1;
 }
 
-.cards-promo .cards-promo-card-body h3 a {
+.cards-promo .cards-promo-card-body h3 {
   color: #444;
-  text-decoration: none;
-}
-
-.cards-promo .cards-promo-card-body h3 a:hover {
-  color: var(--link-color);
-  text-decoration: underline;
 }
