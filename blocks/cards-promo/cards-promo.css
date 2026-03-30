@@ -34,11 +34,6 @@
 .cards-promo > ul > li {
   border-radius: 10px;
   overflow: hidden;
-  transition: box-shadow var(--transition-base);
-}
-
-.cards-promo > ul > li:hover {
-  box-shadow: var(--shadow-md);
 }
 
 .cards-promo .cards-promo-card-link {
@@ -49,6 +44,12 @@
 
 .cards-promo .cards-promo-card-image {
   line-height: 0;
+  border-radius: 10px;
+  transition: box-shadow var(--transition-base);
+}
+
+.cards-promo > ul > li:hover .cards-promo-card-image {
+  box-shadow: var(--shadow-lg);
 }
 
 .cards-promo > ul > li img {
