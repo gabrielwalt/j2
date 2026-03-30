@@ -84,11 +84,11 @@ function addReadMore(textCol) {
 }
 
 function decorateSignup(col) {
-  const buttonWrapper = col.querySelector('.button-wrapper');
+  const buttonWrapper = col.querySelector('.button-container');
   if (!buttonWrapper) return;
 
-  // Find the disclaimer paragraph (any p that isn't the button wrapper)
-  const disclaimer = [...col.querySelectorAll('p:not(.button-wrapper)')].find(
+  // Find the disclaimer paragraph (any p that isn't the button container)
+  const disclaimer = [...col.querySelectorAll('p:not(.button-container)')].find(
     (p) => p.textContent.includes('submitting this form'),
   );
 
@@ -120,8 +120,8 @@ export default function decorate(block) {
           picWrapper.classList.add('columns-destination-img-col');
         }
       } else if (cols.length > 1) {
-        // Signup variant: has a button-wrapper with "Sign up"
-        const signupBtn = col.querySelector('.button-wrapper a[title="Sign up"]');
+        // Signup variant: has a button-container with "Sign up"
+        const signupBtn = col.querySelector('.button-container a[title="Sign up"]');
         if (signupBtn) {
           decorateSignup(col);
         } else {

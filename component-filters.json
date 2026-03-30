@@ -1,5 +1,11 @@
 [
   {
+    "id": "main",
+    "components": [
+      "section"
+    ]
+  },
+  {
     "id": "section",
     "components": [
       "text",
@@ -17,6 +23,54 @@
       "destination-map",
       "table-weather",
       "fragment"
+    ]
+  },
+  {
+    "id": "accordion-faq",
+    "components": [
+      "accordion-faq-item"
+    ]
+  },
+  {
+    "id": "cards",
+    "components": [
+      "card"
+    ]
+  },
+  {
+    "id": "cards-destination",
+    "components": [
+      "cards-destination-item"
+    ]
+  },
+  {
+    "id": "cards-promo",
+    "components": [
+      "cards-promo-item"
+    ]
+  },
+  {
+    "id": "columns",
+    "components": [
+      "column"
+    ]
+  },
+  {
+    "id": "columns-destination",
+    "components": [
+      "columns-destination-item"
+    ]
+  },
+  {
+    "id": "columns-promo",
+    "components": [
+      "columns-promo-item"
+    ]
+  },
+  {
+    "id": "table-weather",
+    "components": [
+      "table-weather-item"
     ]
   }
 ]

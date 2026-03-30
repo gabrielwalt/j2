@@ -91,6 +91,12 @@
     "id": "section",
     "fields": [
       {
+        "component": "text",
+        "name": "name",
+        "label": "Name",
+        "valueType": "string"
+      },
+      {
         "component": "select",
         "name": "style",
         "label": "Style",
@@ -319,6 +325,29 @@
         "component": "aem-content",
         "name": "reference",
         "label": "Fragment",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "page-metadata",
+    "fields": [
+      {
+        "component": "text",
+        "name": "jcr:title",
+        "label": "Title",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "jcr:description",
+        "label": "Description",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "keywords",
+        "label": "Keywords",
         "valueType": "string"
       }
     ]

@@ -227,6 +227,126 @@
               }
             }
           }
+        },
+        {
+          "title": "Accordion FAQ Item",
+          "id": "accordion-faq-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Accordion FAQ Item",
+                  "model": "accordion-faq"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Card",
+          "id": "card",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Card",
+                  "model": "cards"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Cards Destination Item",
+          "id": "cards-destination-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Cards Destination Item",
+                  "model": "cards-destination"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Cards Promo Item",
+          "id": "cards-promo-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Cards Promo Item",
+                  "model": "cards-promo"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Column",
+          "id": "column",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Column",
+                  "model": "columns"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Columns Destination Item",
+          "id": "columns-destination-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Columns Destination Item",
+                  "model": "columns-destination"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Columns Promo Item",
+          "id": "columns-promo-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Columns Promo Item",
+                  "model": "columns-promo"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Table Weather Item",
+          "id": "table-weather-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Table Weather Item",
+                  "model": "table-weather"
+                }
+              }
+            }
+          }
         }
       ]
     },
