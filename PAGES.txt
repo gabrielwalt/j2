@@ -1,3 +1,4 @@
+content/destinations
 content/destinations/balearics
 content/destinations/balearics/formentera
 content/destinations/balearics/formentera/cala-saona
