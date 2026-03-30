@@ -297,7 +297,7 @@ a:active {
 }
 
 /* buttons */
-p.button-wrapper {
+.button-container {
   margin: 12px 0;
   text-align: center;
 }

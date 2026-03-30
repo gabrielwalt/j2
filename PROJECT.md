@@ -1,8 +1,14 @@
-# Jet2 Holidays — EDS Project Reference
+# Jet2 Holidays — EDS Project Reference (Crosswalk)
 
+**Project type**: Crosswalk (xwalk) — Universal Editor authoring
 **Source site**: https://www.jet2holidays.com/
+**GitHub repo**: https://github.com/gabrielwalt/j2-xwalk
+**AEM author**: https://author-p189820-e1977856.adobeaemcloud.com
+**AEM site path**: `/content/j2-xwalk`
+**AEM assets path**: `/content/dam/j2-xwalk`
+**Preview URL**: https://main--j2-xwalk--gabrielwalt.aem.page/
+**Live URL**: https://main--j2-xwalk--gabrielwalt.aem.live/
 **Content path prefix**: `/destinations/`
-**Content directory**: `/content/`
 **Page inventory**: `/PAGES.txt`
 
 ---
@@ -505,7 +511,7 @@ Defined in `page-templates.json`. Source: Jet2 Holidays destination area pages (
 
 | Transformer | File | Purpose |
 |-------------|------|---------|
-| jet2-cleanup | `transformers/jet2-cleanup.js` | Site-wide DOM cleanup: cookie/consent removal, lazy-load activation (`data-src` → `src` with `data-src` removal), Dynamic Media `$Web$` token sanitization, tab panel removal (Overview only), tracking pixel removal, ALL external images proxied via wsrv.nl (both `/-/media/` Sitecore and `media.jet2.com` Scene7 — max 2000px, output=jpg). Scene7 images MUST be proxied because DA's backend cannot download from Akamai-protected `media.jet2.com`. |
+| jet2-cleanup | `transformers/jet2-cleanup.js` | Site-wide DOM cleanup: cookie/consent removal, lazy-load activation (`data-src` → `src` with `data-src` removal), Dynamic Media `$Web$` token sanitization, tab panel removal (Overview only), tracking pixel removal, ALL external images proxied via wsrv.nl (both `/-/media/` Sitecore and `media.jet2.com` Scene7 — max 2000px, output=jpg). |
 | jet2-sections | `transformers/jet2-sections.js` | Section boundary detection |
 
 ### Template: destinations-landing
@@ -551,16 +557,16 @@ npx esbuild tools/importer/import-destinations-landing.js --bundle --format=iife
 
 ---
 
-## Image CDN Sources
+## Image CDN Sources (Import Infrastructure)
 
-This project uses two separate image CDNs. They are NOT interchangeable. **Both are proxied through `wsrv.nl` by `jet2-cleanup.js`** because DA's backend cannot reliably download from either source directly.
+During migration from the source site, two external image CDNs are used. These are proxied through `wsrv.nl` by `jet2-cleanup.js` in the import infrastructure. In the xwalk project, images should be uploaded to AEM Assets DAM (`/content/dam/j2-xwalk/`).
 
 | CDN | URL Pattern | System | Notes |
 |-----|-------------|--------|-------|
-| Sitecore Media | `www.jet2holidays.com/-/media/...` | Sitecore Media Library | Standard file extensions (`.jpg`, `.png`). **Ignores all resize query params** — always returns full original (up to 22MB+). Proxied via `wsrv.nl` in import to enforce 2000px max width. |
-| Scene7 / Dynamic Media | `media.jet2.com/is/image/jet2/...` | Adobe Dynamic Media | **No file extensions in path** — adding `.jpg` to path returns a default placeholder. Uses Akamai CDN which **blocks DA's server-side image downloads** (bot detection). Proxied via `wsrv.nl` in import. May have `:PresetName` suffix to strip. |
+| Sitecore Media | `www.jet2holidays.com/-/media/...` | Sitecore Media Library | Standard file extensions (`.jpg`, `.png`). **Ignores all resize query params** — always returns full original (up to 22MB+). Proxied via `wsrv.nl` in import to enforce max width. |
+| Scene7 / Dynamic Media | `media.jet2.com/is/image/jet2/...` | Adobe Dynamic Media | **No file extensions in path** — adding `.jpg` to path returns a default placeholder. May have `:PresetName` suffix to strip. |
 
-**Critical**: Both CDN sources are auto-proxied through `wsrv.nl` (max 2000px wide, output=jpg) in `jet2-cleanup.js`. Never add file extensions to `media.jet2.com` URL **paths**. Never rewrite `media.jet2.com` origins to `www.jet2holidays.com` — those paths don't exist on the main domain. Never use direct `media.jet2.com` URLs in `.plain.html` — DA cannot download from Akamai-protected Scene7 and will produce `about:error`.
+**Critical**: Never add file extensions to `media.jet2.com` URL **paths**. Never rewrite `media.jet2.com` origins to `www.jet2holidays.com` — those paths don't exist on the main domain.
 
 ---
 
@@ -568,7 +574,7 @@ This project uses two separate image CDNs. They are NOT interchangeable. **Both 
 
 ### Imported Pages
 
-All imported pages are listed in `/PAGES.txt` (942 content files). Each line is a path relative to the project root, e.g. `content/destinations/portugal/algarve.plain.html`.
+All imported pages are listed in `/PAGES.txt` (942 content files). Each line is a path relative to the project root. Content will be authored in AEM Sites at `/content/j2-xwalk/` via the Universal Editor.
 
 ---
 
@@ -580,4 +586,3 @@ All imported pages are listed in `/PAGES.txt` (942 content files). Each line is 
 | **open-sans-fallback** | Local Arial with size-adjust | Fallback for Open Sans |
 | **Oswald** | Declared in `--display-font-family` but **NOT loaded** | Not actively used. Fallback defined. |
 | **Oswald Fallback** | Local Arial Narrow / Arial | Fallback for Oswald |
-| Roboto | Boilerplate leftover in `head.html` | Should be removed — not used |

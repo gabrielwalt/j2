@@ -196,7 +196,7 @@
 }
 
 /* Signup variant — left-aligned button */
-.columns-destination .button-wrapper {
+.columns-destination .button-container {
   text-align: left;
 }
 
