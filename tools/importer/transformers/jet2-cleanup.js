@@ -227,16 +227,29 @@ export default function transform(hookName, element, payload) {
       }
     });
 
-    // Proxy Sitecore media images to enforce max dimensions.
-    // Sitecore's /-/media/ CDN ignores resize query params (height, format, etc.)
-    // for large stock images, returning originals up to 22MB+. DA has a 20MB
-    // per-image upload limit. Route these through wsrv.nl proxy which enforces
-    // max 2000px width — keeps images well under 1MB while preserving quality.
-    // AEM's own CDN (createOptimizedPicture) handles further optimization at
-    // delivery time. Only targets /-/media/ paths; Scene7 and AEM media_xxx
-    // URLs are already correctly sized.
+    // Proxy ALL external images through wsrv.nl to ensure DA can download them.
+    //
+    // DA's backend downloads each <img src="..."> URL server-side when content
+    // is previewed/published. Two CDN sources in this project cause DA failures:
+    //
+    // 1. Sitecore (www.jet2holidays.com/-/media/): Ignores resize query params,
+    //    returns originals up to 22MB+ (exceeds DA's 20MB limit).
+    // 2. Scene7 (media.jet2.com/is/image/jet2/): Uses Akamai CDN which blocks
+    //    DA's server-side requests (bot detection / IP blocking). Every Scene7
+    //    URL becomes "about:error" in DA, while wsrv.nl URLs succeed 100%.
+    //
+    // Solution: Route BOTH through wsrv.nl proxy (Cloudflare-backed). This:
+    // - Ensures DA can always download images (wsrv.nl is never blocked)
+    // - Enforces max 2000px width (prevents DA's 20MB limit for Sitecore)
+    // - Adds explicit format (output=jpg) for DA format detection
+    // - AEM's own CDN handles further optimization at delivery time
+    //
+    // For Scene7: strip :PresetName suffix and ?fmt= param before proxying,
+    // since wsrv.nl handles format conversion via output=jpg.
     element.querySelectorAll('img').forEach((img) => {
       const src = img.getAttribute('src') || '';
+
+      // Sitecore media library images
       if (src.includes('/-/media/')) {
         try {
           const imgUrl = new URL(src, 'https://www.jet2holidays.com');
@@ -244,22 +257,17 @@ export default function transform(hookName, element, payload) {
           img.setAttribute('src', `https://wsrv.nl/?url=${encodeURIComponent(baseUrl)}&w=2000&fit=inside&output=jpg&q=85`);
         } catch { /* ignore malformed URLs */ }
       }
-    });
 
-    // Ensure Scene7 URLs have an explicit format declaration.
-    // Scene7 (media.jet2.com) serves images without file extensions in the URL
-    // path, e.g. /is/image/jet2/524678-beach_getty. DA requires a recognizable
-    // format indicator. Adding ?fmt=jpg (or &fmt=jpg if params exist) tells
-    // Scene7 to serve JPEG explicitly — the image is byte-identical. Do NOT add
-    // a .jpg extension to the path: Scene7 treats extensions as part of the
-    // asset name and returns a default placeholder.
-    element.querySelectorAll('img').forEach((img) => {
-      const src = img.getAttribute('src') || '';
-      if (src.includes('media.jet2.com/is/image/') && !src.includes('fmt=')) {
+      // Scene7 / Dynamic Media images
+      if (src.includes('media.jet2.com/is/image/')) {
         try {
           const imgUrl = new URL(src);
-          imgUrl.searchParams.set('fmt', 'jpg');
-          img.setAttribute('src', imgUrl.toString());
+          // Strip Dynamic Media preset suffix (e.g. :DestCard)
+          imgUrl.pathname = imgUrl.pathname.replace(/:[\w-]+$/, '');
+          // Remove fmt param — wsrv.nl handles format via output=jpg
+          imgUrl.searchParams.delete('fmt');
+          const cleanUrl = `${imgUrl.origin}${imgUrl.pathname}`;
+          img.setAttribute('src', `https://wsrv.nl/?url=${encodeURIComponent(cleanUrl)}&w=2000&fit=inside&output=jpg&q=85`);
         } catch { /* ignore malformed URLs */ }
       }
     });

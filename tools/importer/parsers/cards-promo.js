@@ -14,6 +14,17 @@
  * Output: cards-promo block with one row per card.
  * Column 1: image. Column 2: destination name as linked heading.
  */
+// Convert absolute jet2holidays.com URLs to relative paths
+function toRelativePath(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname === 'www.jet2holidays.com') {
+      return u.pathname + u.search + u.hash;
+    }
+  } catch { /* ignore */ }
+  return url;
+}
+
 export default function parse(element, { document }) {
   const cells = [];
 
@@ -55,7 +66,7 @@ export default function parse(element, { document }) {
     if (label) {
       const h3 = document.createElement('h3');
       const a = document.createElement('a');
-      a.href = link.href;
+      a.href = toRelativePath(link.href);
       a.textContent = label;
       h3.append(a);
       col2.push(h3);

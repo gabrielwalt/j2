@@ -13,6 +13,17 @@
  * Output: columns-promo block with one row, two columns.
  * Column 1: image. Column 2: heading + paragraph + CTA link.
  */
+// Convert absolute jet2holidays.com URLs to relative paths
+function toRelativePath(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname === 'www.jet2holidays.com') {
+      return u.pathname + u.search + u.hash;
+    }
+  } catch { /* ignore */ }
+  return url;
+}
+
 export default function parse(element, { document }) {
   const cells = [];
   const col1 = [];
@@ -63,7 +74,7 @@ export default function parse(element, { document }) {
   if (cta) {
     const p = document.createElement('p');
     const a = document.createElement('a');
-    a.href = cta.href || cta.getAttribute('href') || '';
+    a.href = toRelativePath(cta.href || cta.getAttribute('href') || '');
     a.textContent = cta.textContent.trim();
     p.append(a);
     col2.push(p);

@@ -50,18 +50,25 @@ Respect Experience Modernization Agent skill dependencies:
 
 ## Image URL Rules
 
+### DA Image Download Constraint
+
+19. **DA downloads images server-side** — When content is previewed/published in DA, DA's backend fetches each `<img src="...">` URL server-side. If the download fails, DA replaces the src with `about:error`. The `media_xxx` hash conversion happens entirely on DA's side — the helix-importer's `adjustImageUrls` only converts relative-to-absolute URLs, it does NOT create hashes.
+20. **DA cannot download from `media.jet2.com` (Scene7/Akamai)** — Scene7 uses Akamai CDN which blocks DA's server-side requests (bot detection / IP blocking). Every direct `media.jet2.com` URL becomes `about:error` in DA. This was confirmed: 100% of direct Scene7 URLs failed, 100% of wsrv.nl-proxied URLs succeeded.
+
+### All External Images Must Be Proxied via wsrv.nl
+
+21. **Proxy ALL external images through wsrv.nl** — The `jet2-cleanup` transformer routes both Sitecore AND Scene7 images through `wsrv.nl/?url=...&w=2000&fit=inside&output=jpg&q=85`. This ensures DA can always download them (wsrv.nl is Cloudflare-backed, never blocked), enforces max 2000px width, and provides explicit format indicators.
+22. **NEVER remove the wsrv.nl proxy step** — Without it, Sitecore images may exceed DA's 20MB limit, and Scene7 images will fail entirely with `about:error`.
+23. **NEVER use direct `media.jet2.com` URLs in `.plain.html`** — Always proxy through wsrv.nl. Adding `?fmt=jpg` alone is NOT sufficient — DA still cannot download from Scene7 even with the format indicator.
+
 ### Scene7 / Dynamic Media URLs (`media.jet2.com`)
 
-19. **NEVER add file extensions to Scene7 URL paths** — Scene7 (Adobe Dynamic Media) treats extensions as part of the asset name. Adding `.jpg` to the PATH of `media.jet2.com/is/image/jet2/MyImage` makes it resolve to a completely different (default placeholder) asset.
-20. **Always add `?fmt=jpg` to Scene7 URLs** — DA requires a recognizable format indicator on image URLs. Use the `fmt` query parameter (NOT a path extension). The `jet2-cleanup` transformer adds `?fmt=jpg` (or `&fmt=jpg`) automatically. The image is byte-identical with or without `fmt=jpg`.
-21. **NEVER rewrite image CDN origins** — This project has two image CDN sources: `www.jet2holidays.com/-/media/` (Sitecore) and `media.jet2.com/is/image/jet2/` (Scene7). Keep images at their original CDN origin. Scene7 images do NOT exist on `www.jet2holidays.com` and vice versa.
-22. **Strip Dynamic Media presets only** — Scene7 URLs may have a `:PresetName` suffix (e.g., `/image:DestCard`). Strip the colon and preset name, but do not modify anything else in the URL path.
+24. **NEVER add file extensions to Scene7 URL paths** — Scene7 (Adobe Dynamic Media) treats extensions as part of the asset name. Adding `.jpg` to the PATH of `media.jet2.com/is/image/jet2/MyImage` makes it resolve to a completely different (default placeholder) asset.
+25. **Strip Dynamic Media presets only** — Scene7 URLs may have a `:PresetName` suffix (e.g., `/image:DestCard`). Strip the colon and preset name before proxying through wsrv.nl.
 
 ### Sitecore Media Library URLs (`www.jet2holidays.com/-/media/`)
 
-23. **Sitecore CDN ignores resize query params** — The `/-/media/` CDN ignores `?height=`, `?format=`, `?optimize=`, `?mw=`, `?w=`, and all other resize parameters. Large stock photos (e.g., Getty Images) can be 20MB+ at their original size. The query params in the source page HTML are purely decorative; the server always returns the full original.
-24. **Proxy oversized Sitecore images via wsrv.nl** — DA has a 20MB per-image limit. The `jet2-cleanup` transformer automatically routes all `/-/media/` images through `wsrv.nl/?url=...&w=2000&fit=inside&output=jpg&q=85` to enforce max 2000px width. This keeps images under 1MB while maintaining quality. AEM's own CDN handles further optimization at delivery time.
-25. **NEVER remove the wsrv.nl proxy step** — Without it, any page containing large Sitecore stock photos will fail DA preview with "Image exceeds allowed limit of 20MB".
+26. **Sitecore CDN ignores resize query params** — The `/-/media/` CDN ignores `?height=`, `?format=`, `?optimize=`, `?mw=`, `?w=`, and all other resize parameters. Large stock photos (e.g., Getty Images) can be 20MB+ at their original size. The query params in the source page HTML are purely decorative; the server always returns the full original.
 
 ### Local Preview Path
 

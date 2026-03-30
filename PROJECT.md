@@ -505,7 +505,7 @@ Defined in `page-templates.json`. Source: Jet2 Holidays destination area pages (
 
 | Transformer | File | Purpose |
 |-------------|------|---------|
-| jet2-cleanup | `transformers/jet2-cleanup.js` | Site-wide DOM cleanup: cookie/consent removal, lazy-load activation (`data-src` → `src` with `data-src` removal), Dynamic Media `$Web$` token sanitization, tab panel removal (Overview only), tracking pixel removal, `/-/media/` image proxy via wsrv.nl (max 2000px), Scene7 `?fmt=jpg` addition |
+| jet2-cleanup | `transformers/jet2-cleanup.js` | Site-wide DOM cleanup: cookie/consent removal, lazy-load activation (`data-src` → `src` with `data-src` removal), Dynamic Media `$Web$` token sanitization, tab panel removal (Overview only), tracking pixel removal, ALL external images proxied via wsrv.nl (both `/-/media/` Sitecore and `media.jet2.com` Scene7 — max 2000px, output=jpg). Scene7 images MUST be proxied because DA's backend cannot download from Akamai-protected `media.jet2.com`. |
 | jet2-sections | `transformers/jet2-sections.js` | Section boundary detection |
 
 ### Template: destinations-landing
@@ -541,7 +541,7 @@ Defined in `import-destinations-landing.js`. Source: Jet2 Holidays destinations 
 
 **Region pages** (bulk import):
 ```bash
-npx esbuild tools/importer/import-universal.js --bundle --format=iife --global-name=CustomImportScript --outfile=tools/importer/import-universal.bundle.js
+npx esbuild tools/importer/import-destination-region.js --bundle --format=iife --global-name=CustomImportScript --outfile=tools/importer/import-destination-region.bundle.js
 ```
 
 **Destinations landing page**:
@@ -553,14 +553,14 @@ npx esbuild tools/importer/import-destinations-landing.js --bundle --format=iife
 
 ## Image CDN Sources
 
-This project uses two separate image CDNs. They are NOT interchangeable.
+This project uses two separate image CDNs. They are NOT interchangeable. **Both are proxied through `wsrv.nl` by `jet2-cleanup.js`** because DA's backend cannot reliably download from either source directly.
 
 | CDN | URL Pattern | System | Notes |
 |-----|-------------|--------|-------|
-| Sitecore Media | `www.jet2holidays.com/-/media/...` | Sitecore Media Library | Standard file extensions (`.jpg`, `.png`). **Ignores all resize query params** — always returns full original (up to 22MB+). Proxied via `wsrv.nl` in import. |
-| Scene7 / Dynamic Media | `media.jet2.com/is/image/jet2/...` | Adobe Dynamic Media | **No file extensions in path** — adding `.jpg` to path returns a default placeholder. Use `?fmt=jpg` query param instead (image is byte-identical). May have `:PresetName` suffix to strip. Auto-added by `jet2-cleanup.js`. |
+| Sitecore Media | `www.jet2holidays.com/-/media/...` | Sitecore Media Library | Standard file extensions (`.jpg`, `.png`). **Ignores all resize query params** — always returns full original (up to 22MB+). Proxied via `wsrv.nl` in import to enforce 2000px max width. |
+| Scene7 / Dynamic Media | `media.jet2.com/is/image/jet2/...` | Adobe Dynamic Media | **No file extensions in path** — adding `.jpg` to path returns a default placeholder. Uses Akamai CDN which **blocks DA's server-side image downloads** (bot detection). Proxied via `wsrv.nl` in import. May have `:PresetName` suffix to strip. |
 
-**Critical**: Never add file extensions to `media.jet2.com` URL **paths** — use `?fmt=jpg` query param instead. Never rewrite `media.jet2.com` origins to `www.jet2holidays.com` — those paths don't exist on the main domain. Sitecore `/-/media/` images are auto-proxied through `wsrv.nl` (max 2000px wide) in `jet2-cleanup.js` to stay under DA's 20MB limit.
+**Critical**: Both CDN sources are auto-proxied through `wsrv.nl` (max 2000px wide, output=jpg) in `jet2-cleanup.js`. Never add file extensions to `media.jet2.com` URL **paths**. Never rewrite `media.jet2.com` origins to `www.jet2holidays.com` — those paths don't exist on the main domain. Never use direct `media.jet2.com` URLs in `.plain.html` — DA cannot download from Akamai-protected Scene7 and will produce `about:error`.
 
 ---
 
